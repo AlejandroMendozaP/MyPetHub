@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "921492009974",
+    "project_id": "mypethub-9ddfa",
+    "storage_bucket": "mypethub-9ddfa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:921492009974:android:3187bd18f358d6e2724dd7",
+        "android_client_info": {
+          "package_name": "com.mypethub.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6XUX6vrj3UlPo0go_XxkndW2PYFpAn1Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
