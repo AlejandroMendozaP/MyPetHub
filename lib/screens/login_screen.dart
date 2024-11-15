@@ -39,12 +39,16 @@ class LoginScreen extends StatelessWidget {
                     children: <Widget>[
                       FadeInUp(
                         duration: Duration(milliseconds: 1000),
-                        child: Text("Login", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+                        child: Text("Login",
+                            style: TextStyle(
+                                fontSize: 30, fontWeight: FontWeight.bold)),
                       ),
                       SizedBox(height: 20),
                       FadeInUp(
                         duration: Duration(milliseconds: 1200),
-                        child: Text("Login to your account", style: TextStyle(fontSize: 15, color: Colors.grey[700])),
+                        child: Text("Login to your account",
+                            style: TextStyle(
+                                fontSize: 15, color: Colors.grey[700])),
                       ),
                     ],
                   ),
@@ -54,11 +58,15 @@ class LoginScreen extends StatelessWidget {
                       children: <Widget>[
                         FadeInUp(
                           duration: Duration(milliseconds: 1200),
-                          child: makeInput(label: "Email", controller: emailController),
+                          child: makeInput(
+                              label: "Email", controller: emailController),
                         ),
                         FadeInUp(
                           duration: Duration(milliseconds: 1300),
-                          child: makeInput(label: "Password", obscureText: true, controller: passwordController),
+                          child: makeInput(
+                              label: "Password",
+                              obscureText: true,
+                              controller: passwordController),
                         ),
                       ],
                     ),
@@ -81,13 +89,18 @@ class LoginScreen extends StatelessWidget {
                               emailController.text,
                               passwordController.text,
                             );
+                            print("Is logged in: $isLoggedIn");
                             if (isLoggedIn) {
-                              //Navigator.pushReplacementNamed(context, '/home');
-                              SnackBar(content: Text('Has iniciado sesion.'));
-                              print("eeeeeeeeeeeeeeeeeeeeeee");
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Has iniciado sesión.')),
+                              );
+                              Navigator.pushReplacementNamed(context,
+                                  "/onboarding"); // usa pushReplacementNamed para reemplazar la pantalla actual
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Error: Email not verified or invalid credentials')),
+                                SnackBar(
+                                    content: Text(
+                                        'Error: Email not verified or invalid credentials')),
                               );
                             }
                           },
@@ -96,7 +109,9 @@ class LoginScreen extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50),
                           ),
-                          child: Text("Login", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18)),
+                          child: Text("Login",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 18)),
                         ),
                       ),
                     ),
@@ -107,7 +122,9 @@ class LoginScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text("Don't have an account?"),
-                        Text("Sign up", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18)),
+                        Text("Sign up",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 18)),
                       ],
                     ),
                   ),
@@ -132,19 +149,28 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget makeInput({required String label, bool obscureText = false, required TextEditingController controller}) {
+  Widget makeInput(
+      {required String label,
+      bool obscureText = false,
+      required TextEditingController controller}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(label, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Colors.black87)),
+        Text(label,
+            style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w400,
+                color: Colors.black87)),
         SizedBox(height: 5),
         TextField(
           controller: controller,
           obscureText: obscureText,
           decoration: InputDecoration(
             contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-            enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade400)),
-            border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade400)),
+            enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey.shade400)),
+            border: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey.shade400)),
           ),
         ),
         SizedBox(height: 30),

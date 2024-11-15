@@ -9,14 +9,14 @@ class Database {
     collectionReference = firebaseFirestore.collection('users');
   }
 
-  Future<bool> insertUser(Map<String, dynamic> users) async {
+  Future<bool> insertUser(String uid, Map<String, dynamic> userInfo) async {
     try {
-      collectionReference!.doc().set(users);
+      await collectionReference!.doc(uid).set(userInfo);
       return true;
     } catch (e) {
-      kDebugMode ? print(e) : '';
+      print("Error al insertar el usuario: $e");
+      return false;
     }
-    return false;
   }
 
   Future<bool> delete(String UId) async {

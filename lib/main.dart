@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mypethub/firebase_options.dart';
 import 'package:mypethub/screens/login_screen.dart';
+import 'package:mypethub/screens/onboarding_screen.dart';
 import 'package:mypethub/screens/register_screen.dart';
 import 'package:mypethub/screens/welcome_screen.dart';
 
@@ -23,6 +24,7 @@ class MainApp extends StatelessWidget {
       routes: {
         "/login" : (context) => LoginScreen(),
         "/register" : (context) => RegisterScreen(),
+        "/onboarding" : (context) => OnboardingScreen()
       },
     );
   }
