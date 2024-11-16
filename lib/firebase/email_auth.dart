@@ -31,4 +31,18 @@ class EmailAuth {
       return false;
     }
   }
+
+  Future<bool> resendVerificationEmail() async {
+    try {
+      final user = auth.currentUser;
+      if (user != null && !user.emailVerified) {
+        await user.sendEmailVerification();
+        return true;
+      }
+      return false; // Usuario no disponible o ya verificado
+    } catch (e) {
+      print("Error resending verification email: $e");
+      return false;
+    }
+  }
 }

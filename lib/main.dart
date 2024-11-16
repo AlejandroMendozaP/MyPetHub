@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mypethub/firebase_options.dart';
+import 'package:mypethub/screens/email_verification.dart';
 import 'package:mypethub/screens/login_screen.dart';
 import 'package:mypethub/screens/onboarding_screen.dart';
 import 'package:mypethub/screens/register_screen.dart';
@@ -20,11 +21,12 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: WelcomeScreen(),
+      home: WelcomeScreen(),//WelcomeScreen(),
       routes: {
         "/login" : (context) => LoginScreen(),
         "/register" : (context) => RegisterScreen(),
-        "/onboarding" : (context) => OnboardingScreen()
+        "/onboarding" : (context) => OnboardingScreen(),
+        "/email" : (context) => EmailVerification()
       },
     );
   }

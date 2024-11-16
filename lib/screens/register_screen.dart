@@ -27,8 +27,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     bool isSuccess = await emailAuth.createUser(email, password);
     if (isSuccess) {
-      _showMessage("Cuenta creada. Por favor, verifica tu correo electrónico.");
-      Navigator.pop(context);
+      //_showMessage("Cuenta creada. Por favor, verifica tu correo electrónico.");
+      //Navigator.pop(context);
+      Navigator.pushNamed(context, "/email");
     } else {
       _showMessage("Error al crear la cuenta.");
     }
