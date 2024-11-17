@@ -3,7 +3,8 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mypethub/firebase/email_auth.dart'; // Asegúrate de que el import sea correcto.
+import 'package:mypethub/firebase/email_auth.dart';
+import 'package:mypethub/screens/reset_password_screen.dart'; // Asegúrate de que el import sea correcto.
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
@@ -39,19 +40,19 @@ class LoginScreen extends StatelessWidget {
                     children: <Widget>[
                       FadeInUp(
                         duration: Duration(milliseconds: 1000),
-                        child: Text("Login",
+                        child: Text("Iniciar Sesión",
                             style: TextStyle(
                                 fontSize: 30, fontWeight: FontWeight.bold)),
                       ),
-                      SizedBox(height: 20),
                       FadeInUp(
                         duration: Duration(milliseconds: 1200),
-                        child: Text("Login to your account",
+                        child: Text("Inicia sesión con tus credenciales.",
                             style: TextStyle(
                                 fontSize: 15, color: Colors.grey[700])),
                       ),
                     ],
                   ),
+                  SizedBox(height: 20),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 40),
                     child: Column(
@@ -64,7 +65,7 @@ class LoginScreen extends StatelessWidget {
                         FadeInUp(
                           duration: Duration(milliseconds: 1300),
                           child: makeInput(
-                              label: "Password",
+                              label: "Contraseña",
                               obscureText: true,
                               controller: passwordController),
                         ),
@@ -109,14 +110,14 @@ class LoginScreen extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50),
                           ),
-                          child: Text("Login",
+                          child: Text("Iniciar Sesión",
                               style: TextStyle(
                                   fontWeight: FontWeight.w600, fontSize: 18)),
                         ),
                       ),
                     ),
                   ),
-                  FadeInUp(
+                  /*FadeInUp(
                     duration: Duration(milliseconds: 1500),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -127,11 +128,139 @@ class LoginScreen extends StatelessWidget {
                                 fontWeight: FontWeight.w600, fontSize: 18)),
                       ],
                     ),
+                  ),*/
+                  FadeInUp(
+                    duration: Duration(milliseconds: 1500),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 40),
+                      child: MaterialButton(
+                        minWidth: double.infinity,
+                        height: 60,
+                        onPressed: () async {
+                          User? user = await emailAuth.signInWithGoogle();
+                          if (user != null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content:
+                                      Text('Bienvenido ${user.displayName}!')),
+                            );
+                            Navigator.pushReplacementNamed(
+                                context, "/onboarding");
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      'Error al iniciar sesión con Google.')),
+                            );
+                          }
+                        },
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                          side: BorderSide(color: Colors.black),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/google_logo.png', // Agrega el logo de Google en assets
+                              height: 24,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              "Iniciar sesión con Google",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  FadeInUp(
+                    duration: Duration(milliseconds: 1500),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 40),
+                      child: MaterialButton(
+                        minWidth: double.infinity,
+                        height: 60,
+                        onPressed: () async {
+                          try {
+                            UserCredential userCredential =
+                                await emailAuth.signInWithFacebook();
+                            User? user = userCredential.user;
+                            if (user != null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text(
+                                        'Bienvenido ${user.displayName}!')),
+                              );
+                              Navigator.pushReplacementNamed(
+                                  context, "/onboarding");
+                            }
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      'Error al iniciar sesión con Facebook: $e')),
+                            );
+                          }
+                        },
+                        color: Color(0xFF4267B2), // Azul de Facebook
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                          side: BorderSide(color: Colors.black),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.facebook,
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              "Iniciar sesión con Facebook",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  FadeInUp(
+                    duration: Duration(milliseconds: 1500),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ResetPasswordScreen(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "¿Olvidaste tu contraseña?",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                                color: Colors.blueAccent),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-            FadeInUp(
+            /*FadeInUp(
               duration: Duration(milliseconds: 1200),
               child: Container(
                 height: MediaQuery.of(context).size.height / 2.5,
@@ -142,7 +271,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
+            ),*/
           ],
         ),
       ),

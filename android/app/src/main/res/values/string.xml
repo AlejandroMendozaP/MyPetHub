@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">mypethub</string>
+    <string name="facebook_app_id">528418023357261</string>
+    <string name="fb_login_protocol_scheme">fb528418023357261</string>
+    <string name="facebook_client_token">08289a857c5b37ef6be4f2e4ba075fec</string>
+</resources>
