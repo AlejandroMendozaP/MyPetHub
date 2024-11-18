@@ -42,4 +42,14 @@ class Database {
   Stream<QuerySnapshot> select() {
     return collectionReference!.snapshots();
   }
+
+  Future<List<String>> fetchInterests() async {
+    try {
+      final querySnapshot = await firebaseFirestore.collection('intereses').get();
+      return querySnapshot.docs.map((doc) => doc['interes'] as String).toList();
+    } catch (e) {
+      print("Error al obtener intereses: $e");
+      return [];
+    }
+  }
 }

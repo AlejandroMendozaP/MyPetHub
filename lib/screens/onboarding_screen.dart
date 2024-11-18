@@ -3,22 +3,100 @@ import 'package:flutter/material.dart';
 import 'package:flutter_onboarding_slider/flutter_onboarding_slider.dart';
 import 'package:mypethub/firebase/database.dart';
 
-class OnboardingScreen extends StatelessWidget {
-  final Color kDarkBlueColor = const Color(0xFF053149);
+class OnboardingScreen extends StatefulWidget {
+  const OnboardingScreen({super.key});
+
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  final Color kDarkBlueColor = const Color.fromARGB(255, 222, 49, 99);
 
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
 
-  OnboardingScreen({super.key});
+  final List<String> _allInterests = [];
+  final List<String> _selectedInterests = [];
+  final Database db = Database();
+
+  @override
+  void initState() {
+    super.initState();
+    _populateUserInfo();
+    _loadInterests();
+  }
+
+  Future<void> _populateUserInfo() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      if (user.displayName != null) {
+        nameController.text = user.displayName!;
+      }
+    } else {
+      print("No hay usuario autenticado.");
+    }
+  }
+
+  Future<void> _loadInterests() async {
+    final interests = await db.fetchInterests();
+    setState(() {
+      _allInterests.addAll(interests);
+    });
+  }
+
+  Future<void> _saveUserInfo() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userInfo = {
+        'name': nameController.text,
+        'phone': phoneController.text,
+        'interests': _selectedInterests,
+      };
+      await db.insertUser(user.uid, userInfo);
+    } else {
+      print("No hay usuario autenticado.");
+    }
+  }
+
+  Widget makeInput({
+    required String label,
+    required TextEditingController controller,
+    bool obscureText = false,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          label,
+          style: TextStyle(
+              fontSize: 15, fontWeight: FontWeight.w400, color: Colors.black87),
+        ),
+        SizedBox(height: 5),
+        TextField(
+          controller: controller,
+          obscureText: obscureText,
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey.shade400)),
+            border: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey.shade400)),
+          ),
+        ),
+        SizedBox(height: 30),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return OnBoardingSlider(
-      finishButtonText: 'Register',
+      finishButtonText: 'Iniciar',
       onFinish: () async {
         await _saveUserInfo();
-        print("insertadooooooooooooooooooooooo");
+        print("Datos guardados correctamente.");
       },
       finishButtonStyle: FinishButtonStyle(
         backgroundColor: kDarkBlueColor,
@@ -31,159 +109,125 @@ class OnboardingScreen extends StatelessWidget {
           fontWeight: FontWeight.w600,
         ),
       ),
-      trailing: Text(
-        'Login',
-        style: TextStyle(
-          fontSize: 16,
-          color: kDarkBlueColor,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
       controllerColor: kDarkBlueColor,
       totalPage: 3,
       headerBackgroundColor: Colors.white,
       pageBackgroundColor: Colors.white,
       background: [
-        Image.asset(
-          'assets/background2.png',
-          height: 400,
-        ),
-        Image.asset(
-          'assets/background4.png',
-          height: 2000,
-        ),
-        Image.asset(
-          'assets/background3.png',
-          height: 400,
-        ),
+        Image.asset('assets/background2.png', height: 400),
+        Image.asset('assets/background4.png', height: 2000),
+        Image.asset('assets/background3.png', height: 400),
       ],
       speed: 1.8,
       pageBodies: [
         Container(
           alignment: Alignment.center,
-          width: MediaQuery.of(context).size.width,
           padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
+            children: [
               const SizedBox(height: 480),
               Text(
-                'On your way...',
-                textAlign: TextAlign.center,
+                'MyPetHub',
                 style: TextStyle(
-                  color: kDarkBlueColor,
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.w600,
-                ),
+                    color: kDarkBlueColor,
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 20),
               const Text(
-                'to find the perfect looking Onboarding for your app?',
+                'La app donde puedes administrar a tus mejores amigos',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.black26,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w600,
-                ),
+                    color: Colors.black26,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w600),
               ),
             ],
           ),
         ),
         Container(
           alignment: Alignment.center,
-          width: MediaQuery.of(context).size.width,
           padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
+            children: [
               const SizedBox(height: 20),
               Text(
-                'Complete your details',
+                'Cuentanos más sobre ti',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: kDarkBlueColor,
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.w600,
-                ),
+                    color: kDarkBlueColor,
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 20),
-              makeInput(label: "Nombre", controller: nameController),
-              makeInput(label: "Apellido", controller: lastNameController),
+              makeInput(label: "Nombre Completo", controller: nameController),
               makeInput(label: "Teléfono", controller: phoneController),
+              const SizedBox(height: 10),
+              Text(
+                'Selecciona tus intereses',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 10),
+              _allInterests.isEmpty
+                  ? CircularProgressIndicator()
+                  : Wrap(
+                      spacing: 10, // Espaciado horizontal entre chips
+                      runSpacing: 10, // Espaciado vertical entre líneas
+                      children: _allInterests.map((interest) {
+                        final isSelected =
+                            _selectedInterests.contains(interest);
+                        return ChoiceChip(
+                          label: Text(
+                            interest,
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : Colors.black,
+                            ),
+                          ),
+                          selected: isSelected,
+                          selectedColor:
+                              kDarkBlueColor, // Color para el chip seleccionado
+                          backgroundColor: Colors.grey
+                              .shade300, // Color para el chip no seleccionado
+                          onSelected: (bool selected) {
+                            setState(() {
+                              if (selected) {
+                                _selectedInterests.add(interest);
+                              } else {
+                                _selectedInterests.remove(interest);
+                              }
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
             ],
           ),
         ),
         Container(
           alignment: Alignment.center,
-          width: MediaQuery.of(context).size.width,
           padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
+            children: [
               const SizedBox(height: 480),
               Text(
                 'Start now!',
-                textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: kDarkBlueColor,
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.w600,
-                ),
+                    color: kDarkBlueColor,
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 20),
               const Text(
                 'Where everything is possible and customize your onboarding.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.black26,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w600,
-                ),
+                    color: Colors.black26,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w600),
               ),
             ],
           ),
         ),
-      ],
-    );
-  }
-
-  Future<void> _saveUserInfo() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      final userInfo = {
-        'name': nameController.text,
-        'lastName': lastNameController.text,
-        'phone': phoneController.text,
-      };
-      final db = Database();
-      await db.insertUser(user.uid, userInfo);
-    } else {
-      print("No hay usuario autenticado.");
-    }
-  }
-
-  Widget makeInput({label, controller, obscureText = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          label,
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Colors.black87),
-        ),
-        SizedBox(height: 5),
-        TextField(
-          controller: controller,
-          obscureText: obscureText,
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-            enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade400)),
-            border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade400)),
-          ),
-        ),
-        SizedBox(height: 30),
       ],
     );
   }

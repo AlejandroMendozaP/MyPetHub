@@ -4,6 +4,7 @@ import 'package:mypethub/firebase_options.dart';
 import 'package:mypethub/screens/email_verification.dart';
 import 'package:mypethub/screens/login_screen.dart';
 import 'package:mypethub/screens/onboarding_screen.dart';
+import 'package:mypethub/screens/principal_screen.dart';
 import 'package:mypethub/screens/register_screen.dart';
 import 'package:mypethub/screens/welcome_screen.dart';
 
@@ -26,7 +27,8 @@ class MainApp extends StatelessWidget {
         "/login" : (context) => LoginScreen(),
         "/register" : (context) => RegisterScreen(),
         "/onboarding" : (context) => OnboardingScreen(),
-        "/email" : (context) => EmailVerification()
+        "/email" : (context) => EmailVerification(),
+        "/principal" : (context) => PrincipalScreen()
       },
     );
   }

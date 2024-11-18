@@ -1,0 +1,110 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
+
+class PrincipalScreen extends StatefulWidget {
+  @override
+  _PrincipalScreenState createState() => _PrincipalScreenState();
+}
+
+class _PrincipalScreenState extends State<PrincipalScreen> {
+  int _selectedIndex = 0;
+
+  // Lista de widgets para cada apartado
+  final List<Widget> _screens = [
+    MisMascotasScreen(),
+    AdoptarScreen(),
+    PerdidosScreen(),
+    PerfilScreen(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _screens[_selectedIndex], // Muestra la pantalla correspondiente
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 10,
+              color: Colors.black.withOpacity(0.1),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          child: GNav(
+            gap: 8,
+            activeColor: Colors.white,
+            color: Colors.grey[600],
+            iconSize: 24,
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            duration: Duration(milliseconds: 400),
+            tabBackgroundColor: const Color.fromARGB(255, 222, 49, 99),
+            tabs: [
+              GButton(
+                icon: Icons.pets,
+                text: 'Mascotas',
+              ),
+              GButton(
+                icon: Icons.house_siding_rounded,
+                text: 'Adoptar',
+              ),
+              GButton(
+                icon: Icons.location_searching,
+                text: 'Perdidos',
+              ),
+              GButton(
+                icon: Icons.person,
+                text: 'Perfil',
+              ),
+            ],
+            selectedIndex: _selectedIndex,
+            onTabChange: (index) {
+              setState(() {
+                _selectedIndex = index; // Cambiar índice al seleccionar un tab
+              });
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MisMascotasScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text("Mis Mascotas", style: TextStyle(fontSize: 24)),
+    );
+  }
+}
+
+class AdoptarScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text("Adoptar", style: TextStyle(fontSize: 24)),
+    );
+  }
+}
+
+class PerdidosScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text("Perdidos", style: TextStyle(fontSize: 24)),
+    );
+  }
+}
+
+class PerfilScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text("Perfil", style: TextStyle(fontSize: 24)),
+    );
+  }
+}
