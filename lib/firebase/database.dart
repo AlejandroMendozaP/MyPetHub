@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mypethub/models/pet.dart';
 
 class Database {
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
@@ -52,4 +53,31 @@ class Database {
       return [];
     }
   }
+
+  Future<List<Pet>> getUserPets(String uid) async {
+  try {
+    // Realizar la consulta a la colección "pets"
+    QuerySnapshot snapshot = await firebaseFirestore
+        .collection('pets')
+        .where('userid', isEqualTo: '/users/$uid') // Filtra por UID
+        .get();
+
+    // Mapear los documentos a objetos `Pet`
+    return snapshot.docs.map((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      return Pet(
+        name: data['name'] ?? '',
+        race: data['race'] ?? '',
+        sex: data['sex'] ?? '',
+        color: data['color'] ?? '',
+        birthdate: (data['birthdate'] as Timestamp).toDate(),
+        userid: data['userid'] ?? '',
+      );
+    }).toList();
+  } catch (e) {
+    print("Error al obtener las mascotas: $e");
+    return [];
+  }
+}
+
 }

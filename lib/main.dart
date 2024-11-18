@@ -5,6 +5,7 @@ import 'package:mypethub/screens/edit_profile_screen.dart';
 import 'package:mypethub/screens/email_verification.dart';
 import 'package:mypethub/screens/login_screen.dart';
 import 'package:mypethub/screens/onboarding_screen.dart';
+import 'package:mypethub/screens/pet_detail_screen.dart';
 import 'package:mypethub/screens/principal_screen.dart';
 import 'package:mypethub/screens/register_screen.dart';
 import 'package:mypethub/screens/welcome_screen.dart';

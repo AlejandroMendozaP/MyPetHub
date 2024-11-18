@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:mypethub/screens/my_pets_screen.dart';
 import 'package:mypethub/screens/profile_screen.dart';
 
 class PrincipalScreen extends StatefulWidget {
@@ -13,7 +14,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
 
   // Lista de widgets para cada apartado
   final List<Widget> _screens = [
-    MisMascotasScreen(),
+    MyPetsScreen(),
     AdoptarScreen(),
     PerdidosScreen(),
     ProfileScreen(),
@@ -70,15 +71,6 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class MisMascotasScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text("Mis Mascotas", style: TextStyle(fontSize: 24)),
     );
   }
 }
