@@ -15,6 +15,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
+  final TextEditingController stateController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
 
   final List<String> _allInterests = [];
   final List<String> _selectedInterests = [];
@@ -52,13 +54,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       final userInfo = {
         'name': nameController.text,
         'phone': phoneController.text,
+        'state': stateController.text,
+        'city': cityController.text,
         'interests': _selectedInterests,
+        'photo': user.photoURL ?? null, // Si photoURL es null, se inserta null
       };
       await db.insertUser(user.uid, userInfo);
     } else {
       print("No hay usuario autenticado.");
     }
   }
+
 
   Widget makeInput({
     required String label,
@@ -97,6 +103,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       onFinish: () async {
         await _saveUserInfo();
         print("Datos guardados correctamente.");
+        Navigator.pushNamed(context, "/principal");
       },
       finishButtonStyle: FinishButtonStyle(
         backgroundColor: kDarkBlueColor,
@@ -148,59 +155,66 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         Container(
           alignment: Alignment.center,
           padding: const EdgeInsets.symmetric(horizontal: 40),
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              Text(
-                'Cuentanos más sobre ti',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: kDarkBlueColor,
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 20),
-              makeInput(label: "Nombre Completo", controller: nameController),
-              makeInput(label: "Teléfono", controller: phoneController),
-              const SizedBox(height: 10),
-              Text(
-                'Selecciona tus intereses',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 10),
-              _allInterests.isEmpty
-                  ? CircularProgressIndicator()
-                  : Wrap(
-                      spacing: 10, // Espaciado horizontal entre chips
-                      runSpacing: 10, // Espaciado vertical entre líneas
-                      children: _allInterests.map((interest) {
-                        final isSelected =
-                            _selectedInterests.contains(interest);
-                        return ChoiceChip(
-                          label: Text(
-                            interest,
-                            style: TextStyle(
-                              color: isSelected ? Colors.white : Colors.black,
+          child: SingleChildScrollView(
+            // Solución para evitar overflow
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                Text(
+                  'Cuentanos más sobre ti',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: kDarkBlueColor,
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 20),
+                makeInput(label: "Nombre Completo", controller: nameController),
+                makeInput(label: "Teléfono", controller: phoneController),
+                makeInput(
+                    label: "Estado",
+                    controller: stateController), // Campo nuevo
+                makeInput(
+                    label: "Municipio",
+                    controller: cityController), // Campo nuevo
+                const SizedBox(height: 10),
+                Text(
+                  'Selecciona tus intereses',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 10),
+                _allInterests.isEmpty
+                    ? CircularProgressIndicator()
+                    : Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: _allInterests.map((interest) {
+                          final isSelected =
+                              _selectedInterests.contains(interest);
+                          return ChoiceChip(
+                            label: Text(
+                              interest,
+                              style: TextStyle(
+                                color: isSelected ? Colors.white : Colors.black,
+                              ),
                             ),
-                          ),
-                          selected: isSelected,
-                          selectedColor:
-                              kDarkBlueColor, // Color para el chip seleccionado
-                          backgroundColor: Colors.grey
-                              .shade300, // Color para el chip no seleccionado
-                          onSelected: (bool selected) {
-                            setState(() {
-                              if (selected) {
-                                _selectedInterests.add(interest);
-                              } else {
-                                _selectedInterests.remove(interest);
-                              }
-                            });
-                          },
-                        );
-                      }).toList(),
-                    ),
-            ],
+                            selected: isSelected,
+                            selectedColor: kDarkBlueColor,
+                            backgroundColor: Colors.grey.shade300,
+                            onSelected: (bool selected) {
+                              setState(() {
+                                if (selected) {
+                                  _selectedInterests.add(interest);
+                                } else {
+                                  _selectedInterests.remove(interest);
+                                }
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+              ],
+            ),
           ),
         ),
         Container(

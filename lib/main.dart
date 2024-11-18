@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mypethub/firebase_options.dart';
+import 'package:mypethub/screens/edit_profile_screen.dart';
 import 'package:mypethub/screens/email_verification.dart';
 import 'package:mypethub/screens/login_screen.dart';
 import 'package:mypethub/screens/onboarding_screen.dart';
@@ -28,7 +29,8 @@ class MainApp extends StatelessWidget {
         "/register" : (context) => RegisterScreen(),
         "/onboarding" : (context) => OnboardingScreen(),
         "/email" : (context) => EmailVerification(),
-        "/principal" : (context) => PrincipalScreen()
+        "/principal" : (context) => PrincipalScreen(),
+        "/editprofile" : (context) => EditProfileScreen(),
       },
     );
   }

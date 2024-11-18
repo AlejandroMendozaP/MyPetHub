@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:mypethub/screens/profile_screen.dart';
 
 class PrincipalScreen extends StatefulWidget {
   @override
@@ -15,7 +16,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
     MisMascotasScreen(),
     AdoptarScreen(),
     PerdidosScreen(),
-    PerfilScreen(),
+    ProfileScreen(),
   ];
 
   @override
@@ -96,15 +97,6 @@ class PerdidosScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text("Perdidos", style: TextStyle(fontSize: 24)),
-    );
-  }
-}
-
-class PerfilScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text("Perfil", style: TextStyle(fontSize: 24)),
     );
   }
 }
