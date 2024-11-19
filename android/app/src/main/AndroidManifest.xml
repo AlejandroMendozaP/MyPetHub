@@ -60,6 +60,9 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
+
+        <meta-data android:name="com.google.android.geo.API_KEY"
+                android:value="AIzaSyA88pECP4PaGOC1ZpoAGHSahi9PJl--mzk"/>
         
     </application>
     <!-- Required to query activities that can process text, see:

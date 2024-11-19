@@ -105,7 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   CircleAvatar(
                     radius: 65.0,
                     backgroundImage: profileImageUrl != null
-                        ? NetworkImage(profileImageUrl!)
+                        ? NetworkImage(userData!['photo'])
                         : AssetImage('assets/default_avatar.jpg')
                             as ImageProvider,
                     backgroundColor: Colors.white,

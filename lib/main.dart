@@ -4,13 +4,19 @@ import 'package:mypethub/firebase_options.dart';
 import 'package:mypethub/screens/edit_profile_screen.dart';
 import 'package:mypethub/screens/email_verification.dart';
 import 'package:mypethub/screens/login_screen.dart';
+import 'package:mypethub/screens/maps_screen.dart';
 import 'package:mypethub/screens/onboarding_screen.dart';
 import 'package:mypethub/screens/pet_detail_screen.dart';
 import 'package:mypethub/screens/principal_screen.dart';
 import 'package:mypethub/screens/register_screen.dart';
 import 'package:mypethub/screens/welcome_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
+  await Supabase.initialize(
+    url: 'https://wyfcbhyngmdwuhstieiw.supabase.co', //URL de Supabase
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZmNiaHluZ21kd3Voc3RpZWl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE5ODU1MjcsImV4cCI6MjA0NzU2MTUyN30.gb-lAyq2pl8by3yr74G96bRkeUyuPqLvtYbxGBUv2QM', // clave pública (anon key)
+  );
   runApp(const MainApp());
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
