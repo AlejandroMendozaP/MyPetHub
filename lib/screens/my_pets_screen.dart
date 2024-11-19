@@ -67,8 +67,9 @@ Widget build(BuildContext context) {
           });
         });
       },
-      child: Icon(Icons.add),
-      backgroundColor: Colors.blue,
+      child: Icon(Icons.add, color: Colors.white,),
+      backgroundColor: Color.fromARGB(
+                      255, 222, 49, 99),
     ),
   );
 }

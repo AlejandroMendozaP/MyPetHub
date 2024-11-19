@@ -72,6 +72,7 @@ class Database {
         color: data['color'] ?? '',
         birthdate: (data['birthdate'] as Timestamp).toDate(),
         userid: data['userid'] ?? '',
+        description: data['description'] ?? ''
       );
     }).toList();
   } catch (e) {

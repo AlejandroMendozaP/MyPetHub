@@ -32,11 +32,13 @@ class PetDetailScreen extends StatelessWidget {
             child: Stack(
               children: [
                 Hero(
-                  tag: pet.name, // Usar el nombre como identificador único para Hero
+                  tag: pet
+                      .name, // Usar el nombre como identificador único para Hero
                   child: Container(
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage('assets/default_pet.jpg'), // Imagen temporal
+                        image: AssetImage(
+                            'assets/default_pet.jpg'), // Imagen temporal
                         fit: BoxFit.scaleDown,
                       ),
                       borderRadius: BorderRadius.only(
@@ -112,30 +114,34 @@ class PetDetailScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    "Historia de la Mascota",
-                    style: TextStyle(
-                      color: Colors.grey[800],
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                    ),
-                  ),
-                ),
                 SizedBox(height: 16),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    "Aquí puedes añadir una descripción personalizada sobre ${pet.name}, "
-                    "sus hábitos, cuidados especiales o cualquier otra información que consideres importante.",
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Unos datos extras sobre ${pet.name}",
+                        style: TextStyle(
+                          color: Colors.grey[800],
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        pet.description.isNotEmpty
+                            ? pet.description
+                            : "No se ha proporcionado una descripción.",
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+
                 SizedBox(height: 16),
               ],
             ),
