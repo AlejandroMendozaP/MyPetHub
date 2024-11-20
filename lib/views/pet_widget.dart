@@ -3,11 +3,16 @@ import 'package:mypethub/models/pet.dart';
 import 'package:mypethub/screens/pet_detail_screen.dart';
 
 class PetWidget extends StatelessWidget {
-
   final Pet pet;
   final int index;
 
   PetWidget({required this.pet, required this.index});
+
+  String getAge(DateTime birthdate) {
+    final now = DateTime.now();
+    final age = now.difference(birthdate).inDays ~/ 365;
+    return '$age años';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,119 +26,84 @@ class PetWidget extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20)
-          ),
-          border: Border.all(
-            color: const Color.fromARGB(255, 230, 230, 230),
-            width: 1,
-          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              blurRadius: 10,
+              spreadRadius: 3,
+              offset: Offset(0, 5),
+            ),
+          ],
         ),
-        margin: EdgeInsets.only(right: index != null ? 16 : 0, left: index == 0 ? 16 : 0, bottom: 16, top: 10),
-        width: 220,
+        margin: EdgeInsets.symmetric(horizontal: index == 0 ? 16 : 8, vertical: 10),
+        width: 240,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-
+          children: [
+            // Imagen
             Expanded(
               child: Stack(
                 children: [
-
-                  /*Hero(
-                    tag: pet.imageUrl,
+                  Hero(
+                    tag: pet.photo,
                     child: Container(
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage(pet.imageUrl),
-                          fit: BoxFit.cover,
+                          image: NetworkImage(pet.photo),
+                          fit: BoxFit.contain,
                         ),
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                        ),
-                      ),
-                    ),
-                  ),*/
-
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Padding(
-                      padding: EdgeInsets.all(12),
-                      child: Container(
-                        height: 30,
-                        width: 30,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          /*color: pet.favorite ? Colors.red[400] : Colors.white,
-                        ),
-                        child: Icon(
-                          Icons.favorite,
-                          size: 16,
-                          color: pet.favorite ? Colors.white : Colors.grey[300],*/
-                        ),
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                       ),
                     ),
                   ),
-
                 ],
               ),
             ),
-
+            // Información
             Padding(
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  ),
-
-                  SizedBox(
-                    height: 8,
-                  ),
-
+                  // Nombre
                   Text(
                     pet.name,
                     style: TextStyle(
-                      color: Colors.grey[800],
+                      color: Colors.black87,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
-                  SizedBox(
-                    height: 8,
-                  ),
-
+                  SizedBox(height: 4),
+                  // Raza y sexo
                   Row(
                     children: [
-
-                      Icon(
-                        Icons.location_on,
-                        color: Colors.grey[600],
-                        size: 18,
+                      Text(
+                        '${pet.race} · ${pet.sex}',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 14,
+                        ),
                       ),
-
-                      SizedBox(
-                        width: 4,
-                      ),
-
                     ],
                   ),
-
+                  SizedBox(height: 4),
+                  // Edad
+                  Row(
+                    children: [
+                      Icon(Icons.cake, color: Colors.grey[600], size: 16),
+                      SizedBox(width: 4),
+                      Text(
+                        getAge(pet.birthdate),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8)
                 ],
               ),
             ),
-
           ],
         ),
       ),

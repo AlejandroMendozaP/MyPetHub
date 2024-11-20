@@ -73,20 +73,75 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _selectPhoto() async {
     final picker = ImagePicker();
 
-    // Seleccionar imagen
-    final XFile? pickedImage = await picker.pickImage(
-      source: ImageSource.gallery, // O ImageSource.camera
+    // Mostrar opciones de selección
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.camera_alt),
+              title: Text('Tomar una foto'),
+              onTap: () async {
+                Navigator.of(context).pop(); // Cierra el modal
+
+                // Retrasar la ejecución para garantizar que el contexto sea válido
+                await Future.delayed(Duration(milliseconds: 100));
+
+                final XFile? pickedImage = await picker.pickImage(
+                  source: ImageSource.camera,
+                );
+
+                if (pickedImage != null) {
+                  setState(() {
+                    _newProfileImage = pickedImage;
+                  });
+
+                  // Mostrar SnackBar en un contexto válido
+                  if (mounted) {
+                    ScaffoldMessenger.of(this.context).showSnackBar(
+                      SnackBar(
+                          content: Text(
+                              'Foto tomada. Guarde los cambios para actualizar.')),
+                    );
+                  }
+                }
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.photo),
+              title: Text('Seleccionar de la galería'),
+              onTap: () async {
+                Navigator.of(context).pop(); // Cierra el modal
+
+                // Retrasar la ejecución para garantizar que el contexto sea válido
+                await Future.delayed(Duration(milliseconds: 100));
+
+                final XFile? pickedImage = await picker.pickImage(
+                  source: ImageSource.gallery,
+                );
+
+                if (pickedImage != null) {
+                  setState(() {
+                    _newProfileImage = pickedImage;
+                  });
+
+                  // Mostrar SnackBar en un contexto válido
+                  if (mounted) {
+                    ScaffoldMessenger.of(this.context).showSnackBar(
+                      SnackBar(
+                          content: Text(
+                              'Imagen seleccionada. Guarde los cambios para actualizar.')),
+                    );
+                  }
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
-
-    if (pickedImage != null) {
-      setState(() {
-        _newProfileImage = pickedImage; // Asignar imagen temporal
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Imagen seleccionada. Guarde los cambios para actualizar.')),
-      );
-    }
   }
 
   Future<void> _saveProfile() async {
@@ -110,6 +165,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             // Obtener URL pública
             _newProfileImageUrl =
                 supabaseClient.storage.from('mypethub').getPublicUrl(filePath);
+            Navigator.pop(context);
           } catch (e) {
             print("Error al subir la imagen: $e");
             ScaffoldMessenger.of(context).showSnackBar(
@@ -120,7 +176,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         }
 
         // Actualizar datos en Firebase
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({
           'name': _nameController.text,
           'phone': _phoneController.text,
           'city': _cityController.text,
@@ -175,10 +234,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     CircleAvatar(
                       radius: 60,
                       backgroundImage: _newProfileImage != null
-                        ? FileImage(File(_newProfileImage!.path))
-                        : (_profileImageUrl != null
-                            ? NetworkImage(_profileImageUrl!)
-                            : AssetImage('assets/default_avatar.jpg')) as ImageProvider,
+                          ? FileImage(File(_newProfileImage!.path))
+                          : (_profileImageUrl != null
+                                  ? NetworkImage(_profileImageUrl!)
+                                  : AssetImage('assets/default_avatar.jpg'))
+                              as ImageProvider,
                       backgroundColor: Colors.grey[300],
                     ),
                     Positioned(

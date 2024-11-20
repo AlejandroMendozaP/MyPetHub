@@ -1,7 +1,10 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:io';
 
 class AddPetScreen extends StatefulWidget {
   @override
@@ -16,14 +19,89 @@ class _AddPetScreenState extends State<AddPetScreen> {
   final _descriptionController = TextEditingController();
   String? _selectedSex;
   DateTime? _birthdate;
+  XFile? _petImage;
+  String? _petImageUrl;
 
   final List<String> _sexOptions = ['Macho', 'Hembra'];
 
-  void _savePet() async {
+  Future<void> _selectPhoto() async {
+    final picker = ImagePicker();
+
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.camera_alt),
+              title: Text('Tomar una foto'),
+              onTap: () async {
+                Navigator.of(context).pop();
+                final XFile? pickedImage =
+                    await picker.pickImage(source: ImageSource.camera);
+                if (pickedImage != null) {
+                  setState(() {
+                    _petImage = pickedImage;
+                  });
+                }
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.photo),
+              title: Text('Seleccionar de la galería'),
+              onTap: () async {
+                Navigator.of(context).pop();
+                final XFile? pickedImage =
+                    await picker.pickImage(source: ImageSource.gallery);
+                if (pickedImage != null) {
+                  setState(() {
+                    _petImage = pickedImage;
+                  });
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _uploadPhoto() async {
+    if (_petImage == null) return;
+
+    try {
+      final supabaseClient = Supabase.instance.client;
+      final fileBytes = await _petImage!.readAsBytes();
+      final filePath =
+          'pets/${FirebaseAuth.instance.currentUser!.uid}/${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      await supabaseClient.storage
+          .from('mypethub')
+          .uploadBinary(filePath, fileBytes);
+
+      // Obtener URL pública
+      final publicUrl =
+          supabaseClient.storage.from('mypethub').getPublicUrl(filePath);
+
+      setState(() {
+        _petImageUrl = publicUrl;
+      });
+    } catch (e) {
+      print("Error al subir la imagen: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al subir la imagen')),
+      );
+    }
+  }
+
+  Future<void> _savePet() async {
     if (_formKey.currentState!.validate() &&
         _birthdate != null &&
         _selectedSex != null) {
       String currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+
+      await _uploadPhoto(); // Subir foto antes de guardar los datos
 
       try {
         await FirebaseFirestore.instance.collection('pets').add({
@@ -34,6 +112,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
           'description': _descriptionController.text,
           'birthdate': _birthdate,
           'userid': '/users/$currentUid',
+          if (_petImageUrl != null) 'photo': _petImageUrl,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -73,6 +152,17 @@ class _AddPetScreenState extends State<AddPetScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              GestureDetector(
+                onTap: _selectPhoto,
+                child: CircleAvatar(
+                  radius: 60,
+                  backgroundImage: _petImage != null
+                      ? FileImage(File(_petImage!.path))
+                      : AssetImage('assets/default_pet.jpg') as ImageProvider,
+                  backgroundColor: Colors.grey[300],
+                ),
+              ),
+              SizedBox(height: 15),
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
@@ -207,9 +297,8 @@ class _AddPetScreenState extends State<AddPetScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                  backgroundColor: Color.fromARGB(
-                      255, 222, 49, 99), // Cambiar color de fondo
-                  foregroundColor: Colors.white, // Color del texto
+                  backgroundColor: Color.fromARGB(255, 222, 49, 99),
+                  foregroundColor: Colors.white,
                 ),
                 child:
                     Text('Registrar Mascota', style: TextStyle(fontSize: 16)),

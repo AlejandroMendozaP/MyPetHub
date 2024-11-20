@@ -37,9 +37,8 @@ class PetDetailScreen extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage(
-                            'assets/default_pet.jpg'), // Imagen temporal
-                        fit: BoxFit.scaleDown,
+                        image: NetworkImage(pet.photo), // Imagen temporal
+                        fit: BoxFit.contain,
                       ),
                       borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(25),

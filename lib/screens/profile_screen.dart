@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mypethub/firebase/database.dart';
+import 'package:mypethub/screens/edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -178,7 +180,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   "Configurar perfil",
                   Icons.settings,
                   () {
-                    Navigator.pushNamed(context, '/editprofile');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => EditProfileScreen()),
+                    ).then((_) {
+                      // Refresca la lista después de registrar una nueva mascota
+                      setState(() {
+                        _loadUserData();
+                      });
+                    });
                   },
                 ),
                 _buildOptionButton(

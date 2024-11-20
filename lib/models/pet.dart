@@ -6,6 +6,7 @@ class Pet {
   final DateTime birthdate;
   final String userid;
   final String description;
+  final String photo;
 
   Pet({
     required this.name,
@@ -14,6 +15,7 @@ class Pet {
     required this.color,
     required this.birthdate,
     required this.userid,
-    required this.description
+    required this.description,
+    required this.photo
   });
 }
