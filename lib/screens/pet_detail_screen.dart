@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mypethub/models/pet.dart';
+import 'package:mypethub/screens/add_pet_screen.dart';
 
 class PetDetailScreen extends StatelessWidget {
   final Pet pet;
@@ -57,6 +58,17 @@ class PetDetailScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                IconButton(
+  icon: Icon(Icons.edit),
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddPetScreen(pet: pet),
+      ),
+    );
+  },
+),
                 Padding(
                   padding: EdgeInsets.all(16),
                   child: Row(

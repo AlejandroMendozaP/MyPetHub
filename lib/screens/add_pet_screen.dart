@@ -3,10 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mypethub/models/pet.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io';
 
 class AddPetScreen extends StatefulWidget {
+  final Pet? pet; // Mascota opcional para edición
+
+  AddPetScreen({this.pet});
+
   @override
   _AddPetScreenState createState() => _AddPetScreenState();
 }
@@ -23,6 +28,22 @@ class _AddPetScreenState extends State<AddPetScreen> {
   String? _petImageUrl;
 
   final List<String> _sexOptions = ['Macho', 'Hembra'];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.pet != null) {
+      // Inicializar controladores y valores con los datos de la mascota
+      final pet = widget.pet!;
+      _nameController.text = pet.name;
+      _raceController.text = pet.race;
+      _colorController.text = pet.color;
+      _descriptionController.text = pet.description;
+      _selectedSex = pet.sex;
+      _birthdate = pet.birthdate;
+      _petImageUrl = pet.photo;
+    }
+  }
 
   Future<void> _selectPhoto() async {
     final picker = ImagePicker();
@@ -95,35 +116,51 @@ class _AddPetScreenState extends State<AddPetScreen> {
     }
   }
 
-  Future<void> _savePet() async {
+  Future<void> _saveOrUpdatePet() async {
     if (_formKey.currentState!.validate() &&
         _birthdate != null &&
         _selectedSex != null) {
-      String currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
-
-      await _uploadPhoto(); // Subir foto antes de guardar los datos
+      await _uploadPhoto();
 
       try {
-        await FirebaseFirestore.instance.collection('pets').add({
-          'name': _nameController.text,
-          'race': _raceController.text,
-          'sex': _selectedSex,
-          'color': _colorController.text,
-          'description': _descriptionController.text,
-          'birthdate': _birthdate,
-          'userid': '/users/$currentUid',
-          if (_petImageUrl != null) 'photo': _petImageUrl,
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Mascota registrada exitosamente")),
-        );
+        if (widget.pet == null) {
+          // Crear nueva mascota
+          await FirebaseFirestore.instance.collection('pets').add({
+            'name': _nameController.text,
+            'race': _raceController.text,
+            'sex': _selectedSex,
+            'color': _colorController.text,
+            'description': _descriptionController.text,
+            'birthdate': _birthdate,
+            'photo': _petImageUrl,
+            'userid': '/users/${FirebaseAuth.instance.currentUser!.uid}',
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Mascota registrada exitosamente")),
+          );
+        } else {
+          // Actualizar mascota existente
+          await FirebaseFirestore.instance
+              .collection('pets')
+              .doc(widget.pet!.id)
+              .update({
+            'name': _nameController.text,
+            'race': _raceController.text,
+            'sex': _selectedSex,
+            'color': _colorController.text,
+            'description': _descriptionController.text,
+            'birthdate': _birthdate,
+            if (_petImageUrl != null) 'photo': _petImageUrl,
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Mascota actualizada exitosamente")),
+          );
+        }
 
         Navigator.pop(context);
       } catch (e) {
-        print("Error al guardar la mascota: $e");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error al registrar la mascota")),
+          SnackBar(content: Text("Error al guardar los datos de la mascota")),
         );
       }
     } else {
@@ -136,21 +173,14 @@ class _AddPetScreenState extends State<AddPetScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Text('Agregar Mascota',
-            style: TextStyle(fontWeight: FontWeight.bold)),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 1,
-        iconTheme: IconThemeData(color: Colors.black),
+        title: Text(widget.pet == null ? 'Agregar Mascota' : 'Editar Mascota'),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(20.0),
-        child: Form(
-          key: _formKey,
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               GestureDetector(
                 onTap: _selectPhoto,
@@ -158,8 +188,9 @@ class _AddPetScreenState extends State<AddPetScreen> {
                   radius: 60,
                   backgroundImage: _petImage != null
                       ? FileImage(File(_petImage!.path))
-                      : AssetImage('assets/default_pet.jpg') as ImageProvider,
-                  backgroundColor: Colors.grey[300],
+                      : (_petImageUrl != null
+                          ? NetworkImage(_petImageUrl!) as ImageProvider
+                          : AssetImage('assets/default_pet.jpg')),
                 ),
               ),
               SizedBox(height: 15),
@@ -291,7 +322,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
               ),
               SizedBox(height: 30),
               ElevatedButton(
-                onPressed: _savePet,
+                onPressed: _saveOrUpdatePet,
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -301,7 +332,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
                   foregroundColor: Colors.white,
                 ),
                 child:
-                    Text('Registrar Mascota', style: TextStyle(fontSize: 16)),
+                    Text(widget.pet == null ? 'Registrar Mascota' : 'Guardar Cambios', style: TextStyle(fontSize: 16),),
               ),
             ],
           ),

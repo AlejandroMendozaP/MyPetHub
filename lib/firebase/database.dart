@@ -46,7 +46,8 @@ class Database {
 
   Future<List<String>> fetchInterests() async {
     try {
-      final querySnapshot = await firebaseFirestore.collection('intereses').get();
+      final querySnapshot =
+          await firebaseFirestore.collection('intereses').get();
       return querySnapshot.docs.map((doc) => doc['interes'] as String).toList();
     } catch (e) {
       print("Error al obtener intereses: $e");
@@ -55,31 +56,31 @@ class Database {
   }
 
   Future<List<Pet>> getUserPets(String uid) async {
-  try {
-    // Realizar la consulta a la colección "pets"
-    QuerySnapshot snapshot = await firebaseFirestore
-        .collection('pets')
-        .where('userid', isEqualTo: '/users/$uid') // Filtra por UID
-        .get();
+    try {
+      // Realizar la consulta a la colección "pets"
+      QuerySnapshot snapshot = await firebaseFirestore
+          .collection('pets')
+          .where('userid', isEqualTo: '/users/$uid') // Filtra por UID
+          .get();
 
-    // Mapear los documentos a objetos `Pet`
-    return snapshot.docs.map((doc) {
-      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      return Pet(
-        name: data['name'] ?? '',
-        race: data['race'] ?? '',
-        sex: data['sex'] ?? '',
-        color: data['color'] ?? '',
-        birthdate: (data['birthdate'] as Timestamp).toDate(),
-        userid: data['userid'] ?? '',
-        description: data['description'] ?? '',
-        photo: data['photo'] ?? ''
-      );
-    }).toList();
-  } catch (e) {
-    print("Error al obtener las mascotas: $e");
-    return [];
+      // Mapear los documentos a objetos `Pet`
+      return snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return Pet(
+          id: doc.id, // Extrae el ID del documento
+          name: data['name'] ?? '',
+          race: data['race'] ?? '',
+          sex: data['sex'] ?? '',
+          color: data['color'] ?? '',
+          birthdate: (data['birthdate'] as Timestamp).toDate(),
+          userid: data['userid'] ?? '',
+          description: data['description'] ?? '',
+          photo: data['photo'] ?? '',
+        );
+      }).toList();
+    } catch (e) {
+      print("Error al obtener las mascotas: $e");
+      return [];
+    }
   }
-}
-
 }
