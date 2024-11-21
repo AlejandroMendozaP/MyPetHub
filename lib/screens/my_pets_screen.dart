@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mypethub/firebase/database.dart';
@@ -16,7 +18,7 @@ class _MyPetsScreenState extends State<MyPetsScreen> {
   @override
   void initState() {
     super.initState();
-    String currentUid = FirebaseAuth.instance.currentUser?.uid ?? ''; // Obtén el UID del usuario autenticado.
+    String currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
     Database db = Database();
     _petsFuture = db.getUserPets(currentUid);
   }

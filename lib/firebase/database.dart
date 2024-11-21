@@ -83,4 +83,14 @@ class Database {
       return [];
     }
   }
+
+  Future<bool> reportLostPet(Map<String, dynamic> lostPetData) async {
+    try {
+      await firebaseFirestore.collection('lostpets').add(lostPetData);
+      return true;
+    } catch (e) {
+      print("Error al reportar mascota perdida: $e");
+      return false;
+    }
+  }
 }
