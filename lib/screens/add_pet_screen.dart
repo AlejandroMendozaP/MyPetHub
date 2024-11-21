@@ -237,6 +237,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
                   ),
                 ),
                 isExpanded: true,
+                value: _selectedSex, // Asigna el valor inicial
                 items: _sexOptions
                     .map((sex) => DropdownMenuItem<String>(
                           value: sex,
@@ -331,8 +332,10 @@ class _AddPetScreenState extends State<AddPetScreen> {
                   backgroundColor: Color.fromARGB(255, 222, 49, 99),
                   foregroundColor: Colors.white,
                 ),
-                child:
-                    Text(widget.pet == null ? 'Registrar Mascota' : 'Guardar Cambios', style: TextStyle(fontSize: 16),),
+                child: Text(
+                  widget.pet == null ? 'Registrar Mascota' : 'Guardar Cambios',
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
             ],
           ),

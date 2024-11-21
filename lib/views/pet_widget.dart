@@ -20,7 +20,7 @@ class PetWidget extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => PetDetailScreen(pet: pet)),
+          MaterialPageRoute(builder: (context) => PetDetailScreen(petId: pet.id)),
         );
       },
       child: Container(
