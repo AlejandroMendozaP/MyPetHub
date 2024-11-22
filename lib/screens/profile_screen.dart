@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mypethub/firebase/database.dart';
 import 'package:mypethub/screens/edit_profile_screen.dart';
+import 'package:mypethub/screens/theme_switcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -50,27 +51,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
         margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         decoration: BoxDecoration(
-          color: Colors.grey[200],
           borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.grey.shade300),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
-                Icon(leadingIcon, color: Colors.black54),
+                Icon(leadingIcon,),
                 SizedBox(width: 15),
                 Text(
                   title,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black87,
                   ),
                 ),
               ],
             ),
-            Icon(Icons.chevron_right, color: Colors.black54),
+            Icon(Icons.chevron_right),
           ],
         ),
       ),
@@ -195,7 +195,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   "Modificar tema",
                   Icons.color_lens,
                   () {
-                    // Puedes agregar otra acción aquí
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ThemeSwitcher()));
                   },
                 ),
               ],

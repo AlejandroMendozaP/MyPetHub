@@ -15,10 +15,8 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -154,7 +152,7 @@ class LoginScreen extends StatelessWidget {
                             );
                           }
                         },
-                        color: Colors.white,
+                        //color: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
                           side: BorderSide(color: Colors.black),
@@ -288,8 +286,7 @@ class LoginScreen extends StatelessWidget {
         Text(label,
             style: TextStyle(
                 fontSize: 15,
-                fontWeight: FontWeight.w400,
-                color: Colors.black87)),
+                fontWeight: FontWeight.w400)),
         SizedBox(height: 5),
         TextField(
           controller: controller,

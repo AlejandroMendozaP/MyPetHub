@@ -199,7 +199,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
                 decoration: InputDecoration(
                   labelText: 'Nombre',
                   filled: true,
-                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide.none,
@@ -215,7 +214,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
                 decoration: InputDecoration(
                   labelText: 'Raza',
                   filled: true,
-                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide.none,
@@ -230,7 +228,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
                 decoration: InputDecoration(
                   labelText: 'Sexo',
                   filled: true,
-                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide.none,
@@ -258,7 +255,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
                 decoration: InputDecoration(
                   labelText: 'Color',
                   filled: true,
-                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide.none,
@@ -274,7 +270,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
                 decoration: InputDecoration(
                   labelText: 'Descripción',
                   filled: true,
-                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide.none,
@@ -303,7 +298,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
                   decoration: BoxDecoration(
-                    color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: Colors.grey.shade300),
                   ),

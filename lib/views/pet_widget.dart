@@ -16,27 +16,36 @@ class PetWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => PetDetailScreen(petId: pet.id)),
+          MaterialPageRoute(
+              builder: (context) => PetDetailScreen(petId: pet.id)),
         );
       },
       child: Container(
+        margin:
+            EdgeInsets.symmetric(horizontal: index == 0 ? 16 : 8, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.cardColor,
           borderRadius: BorderRadius.circular(20),
+          border: theme.brightness == Brightness.dark
+              ? Border.all(color: Colors.white.withOpacity(0.2))
+              : null,
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              blurRadius: 10,
-              spreadRadius: 3,
-              offset: Offset(0, 5),
+              color: theme.brightness == Brightness.light
+                  ? Colors.grey.withOpacity(0.3)
+                  : Colors.white.withOpacity(0.1),
+              spreadRadius: 2,
+              blurRadius: 6,
+              offset: Offset(0, 4),
             ),
           ],
         ),
-        margin: EdgeInsets.symmetric(horizontal: index == 0 ? 16 : 8, vertical: 10),
         width: 240,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -51,9 +60,10 @@ class PetWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: NetworkImage(pet.photo),
-                          fit: BoxFit.contain,
+                          fit: BoxFit.cover,
                         ),
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(20)),
                       ),
                     ),
                   ),
@@ -69,11 +79,8 @@ class PetWidget extends StatelessWidget {
                   // Nombre
                   Text(
                     pet.name,
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: theme.textTheme.titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 4),
                   // Raza y sexo
@@ -81,10 +88,8 @@ class PetWidget extends StatelessWidget {
                     children: [
                       Text(
                         '${pet.race} · ${pet.sex}',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14,
-                        ),
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(color: theme.hintColor),
                       ),
                     ],
                   ),
@@ -92,15 +97,16 @@ class PetWidget extends StatelessWidget {
                   // Edad
                   Row(
                     children: [
-                      Icon(Icons.cake, color: Colors.grey[600], size: 16),
+                      Icon(Icons.cake, color: theme.hintColor, size: 16),
                       SizedBox(width: 4),
                       Text(
                         getAge(pet.birthdate),
-                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(color: theme.hintColor),
                       ),
                     ],
                   ),
-                  SizedBox(height: 8)
+                  SizedBox(height: 8),
                 ],
               ),
             ),

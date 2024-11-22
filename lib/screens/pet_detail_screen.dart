@@ -30,7 +30,6 @@ class PetDetailScreen extends StatelessWidget {
       final pet = Pet.fromFirestore(snapshot.data!); // Conversión a objeto `Pet`
 
       return Scaffold(
-        backgroundColor: Colors.white,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -41,7 +40,6 @@ class PetDetailScreen extends StatelessWidget {
             },
             child: Icon(
               Icons.arrow_back,
-              color: Colors.grey[800],
             ),
           ),
         ),
@@ -67,7 +65,6 @@ class PetDetailScreen extends StatelessWidget {
                   Text(
                     pet.name,
                     style: TextStyle(
-                      color: Colors.grey[800],
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
                     ),
@@ -106,7 +103,6 @@ class PetDetailScreen extends StatelessWidget {
                   Text(
                     "Unos datos extras sobre ${pet.name}",
                     style: TextStyle(
-                      color: Colors.grey[800],
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                     ),

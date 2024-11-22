@@ -212,14 +212,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         title: Text('Editar Perfil',
             style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
-        backgroundColor: Colors.white,
         elevation: 1,
-        iconTheme: IconThemeData(color: Colors.black),
+        //iconTheme: IconThemeData(color: Colors.black),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),
@@ -266,7 +264,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 decoration: InputDecoration(
                   labelText: 'Nombre',
                   filled: true,
-                  fillColor: Colors.white,
+                  //fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide.none,
@@ -282,7 +280,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 decoration: InputDecoration(
                   labelText: 'Teléfono',
                   filled: true,
-                  fillColor: Colors.white,
+                  //fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide.none,
@@ -299,7 +297,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 decoration: InputDecoration(
                   labelText: 'Ciudad',
                   filled: true,
-                  fillColor: Colors.white,
+                  //fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide.none,
@@ -315,7 +313,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 decoration: InputDecoration(
                   labelText: 'Estado',
                   filled: true,
-                  fillColor: Colors.white,
+                  //fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide.none,
@@ -347,7 +345,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                           ),
                           selected: isSelected,
-                          selectedColor: Colors.blue,
+                          selectedColor: Color.fromARGB(255, 222, 49, 99),
                           backgroundColor: Colors.grey.shade300,
                           onSelected: (bool selected) {
                             setState(() {
@@ -365,6 +363,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ElevatedButton(
                 onPressed: _saveProfile,
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 222, 49, 99),
+                  foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),

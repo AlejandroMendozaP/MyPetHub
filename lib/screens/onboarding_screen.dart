@@ -77,7 +77,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         Text(
           label,
           style: TextStyle(
-              fontSize: 15, fontWeight: FontWeight.w400, color: Colors.black87),
+              fontSize: 15, fontWeight: FontWeight.w400,),
         ),
         SizedBox(height: 5),
         TextField(
@@ -118,8 +118,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ),
       controllerColor: kDarkBlueColor,
       totalPage: 3,
-      headerBackgroundColor: Colors.white,
-      pageBackgroundColor: Colors.white,
+      headerBackgroundColor: Colors.transparent,
       background: [
         Image.asset('assets/background2.png', height: 400),
         Image.asset('assets/background4.png', height: 2000),
@@ -145,7 +144,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 'La app donde puedes administrar a tus mejores amigos',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: Colors.black26,
                     fontSize: 18.0,
                     fontWeight: FontWeight.w600),
               ),
@@ -235,7 +233,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 'Where everything is possible and customize your onboarding.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: Colors.black26,
                     fontSize: 18.0,
                     fontWeight: FontWeight.w600),
               ),

@@ -26,7 +26,6 @@ class _MyPetsScreenState extends State<MyPetsScreen> {
   @override
 Widget build(BuildContext context) {
   return Scaffold(
-    backgroundColor: Colors.grey[100],
     body: FutureBuilder<List<Pet>>(
       future: _petsFuture,
       builder: (context, snapshot) {

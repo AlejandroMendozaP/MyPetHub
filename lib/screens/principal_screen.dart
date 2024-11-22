@@ -27,13 +27,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
       body: _screens[_selectedIndex], // Muestra la pantalla correspondiente
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 10,
-              color: Colors.black.withOpacity(0.1),
-            ),
-          ],
+          border: Border.all(color: const Color.fromARGB(80, 158, 158, 158))
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),

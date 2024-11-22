@@ -10,15 +10,13 @@ class ResetPasswordScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back_ios, size: 20, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios, size: 20,),
         ),
       ),
       body: Container(
@@ -123,8 +121,7 @@ class ResetPasswordScreen extends StatelessWidget {
         Text(label,
             style: TextStyle(
                 fontSize: 15,
-                fontWeight: FontWeight.w400,
-                color: Colors.black87)),
+                fontWeight: FontWeight.w400,)),
         SizedBox(height: 5),
         TextField(
           controller: controller,
