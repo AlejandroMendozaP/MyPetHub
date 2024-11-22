@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mypethub/firebase_options.dart';
 import 'package:mypethub/provider/theme_provider.dart';
 import 'package:mypethub/screens/edit_profile_screen.dart';
@@ -34,9 +35,18 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return MaterialApp(
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
       themeMode: themeProvider.themeMode,
+      theme: ThemeData(
+        brightness: Brightness.light,
+        textTheme: GoogleFonts.getTextTheme(themeProvider.fontFamily),
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        textTheme: GoogleFonts.getTextTheme(themeProvider.fontFamily).apply(
+          bodyColor: Colors.white,
+          displayColor: Colors.white,
+        ),
+      ),
       debugShowCheckedModeBanner: false,
       home: WelcomeScreen(),//WelcomeScreen(),
       routes: {
