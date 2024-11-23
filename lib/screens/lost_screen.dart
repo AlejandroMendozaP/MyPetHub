@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart'; // Importa Lottie
+import 'package:lottie/lottie.dart';
 import 'package:mypethub/firebase/database.dart';
+import 'lost_pet_detail_screen.dart'; // Importa la pantalla de detalle
 
 class LostScreen extends StatelessWidget {
-  final Database database = Database(); // Instancia de la base de datos
+  final Database database = Database();
 
   LostScreen({Key? key}) : super(key: key);
 
@@ -12,30 +13,19 @@ class LostScreen extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          // Sección superior con Lottie y el texto
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                // Lottie Animation
                 SizedBox(
-                  height: 150, // Ajusta el tamaño según tu diseño
+                  height: 150,
                   child: Lottie.asset('assets/lostpet.json'),
                 ),
                 const SizedBox(height: 8),
-                // Texto
-                /*Text(
-                  '¡Ayúdanos a encontrarlos!',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),*/
               ],
             ),
           ),
           const SizedBox(height: 16),
-          // FutureBuilder para mostrar las mascotas perdidas
           Expanded(
             child: FutureBuilder<List<Map<String, dynamic>>>(
               future: database.getLostPetsWithDetails(),
@@ -61,44 +51,57 @@ class LostScreen extends StatelessWidget {
                         'https://via.placeholder.com/150'; // Imagen por defecto
                     final lastSeenDate =
                         lostPetData['lastSeenDate'] ?? 'Desconocido';
+                    final lostPetId = lostPetData['id'] ?? 'Desconocido'; // Extrae el ID de `lostPet`
 
-                    return Card(
-                      elevation: 5,
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundImage: NetworkImage(photoUrl),
-                              radius: 40,
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    name,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge
-                                        ?.copyWith(
-                                            fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Visto por última vez: $lastSeenDate',
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
-                                  ),
-                                ],
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                LostPetDetailScreen(lostPetId: lostPetId),
+                          ),
+                        );
+                      },
+                      child: Card(
+                        elevation: 5,
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(photoUrl),
+                                radius: 40,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      name,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge
+                                          ?.copyWith(
+                                              fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Visto por última vez: $lastSeenDate',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );
