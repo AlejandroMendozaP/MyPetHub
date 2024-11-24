@@ -2,11 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mypethub/firebase/database.dart';
 import 'package:mypethub/models/pet.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LostPetDetailScreen extends StatelessWidget {
-  final String lostPetId; // ID de la mascota perdida
+  final String lostPetId;
 
   LostPetDetailScreen({required this.lostPetId});
+
+  Future<void> _launchEmail(String email) async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: email,
+      queryParameters: {'subject': "Información sobre tu mascota perdida"},
+    );
+    await launchUrl(emailUri);
+  }
+
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    await launchUrl(launchUri);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,17 +46,18 @@ class LostPetDetailScreen extends StatelessWidget {
 
         final lostPetData = snapshot.data!;
         final petData = lostPetData['petDetails'] ?? {};
+        final userData = lostPetData['userDetails'] ?? {};
         final petPhoto = petData['photo'] ?? lostPetData['photo'] ?? '';
         final petName = petData['name'] ?? 'Desconocido';
-        final petDescription = petData['description'] ??
-            lostPetData['description'] ??
-            'Sin descripción';
-        final losDescription = lostPetData['description'] ?? 'Sin descripción';
-        final petRace = petData['race'] ?? 'Desconocida';
-        final ownerEmail =
-            lostPetData['contactInfo']['email'] ?? 'No disponible';
-        final ownerPhone =
-            lostPetData['contactInfo']['phone'] ?? 'No disponible';
+        final userPhoto = userData['photo'] ?? '';
+        final userName = userData['name'] ?? 'Usuario desconocido';
+        final userEmail =
+            lostPetData['contactInfo']['email'] ?? 'Correo no disponible';
+        final userPhone =
+            lostPetData['contactInfo']['phone'] ?? 'Teléfono no disponible';
+        final petDescription = petData['description'] ?? 
+            lostPetData['description'] ?? 'Sin descripción';
+        final lostDescription = lostPetData['description'] ?? 'Sin descripción';
         final lastSeenLocation = LatLng(
           lostPetData['lastSeenLocation']['latitude'],
           lostPetData['lastSeenLocation']['longitude'],
@@ -63,26 +82,55 @@ class LostPetDetailScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 16),
-              Text(
-                petName,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              Text("Raza: $petRace", style: TextStyle(fontSize: 16)),
+              Row(children: [
+                Icon(Icons.pets),
+                SizedBox(width: 8),
+                Text(
+                  petName,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+              ]),
               SizedBox(height: 8),
               Text(petDescription, style: TextStyle(fontSize: 16)),
+              SizedBox(height: 5),
+              Text(lostDescription, style: TextStyle(fontSize: 16)),
               SizedBox(height: 16),
-              Text(
-                "Información de contacto",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              Row(
+                children: [
+                  CircleAvatar(
+                    backgroundImage: NetworkImage(userPhoto),
+                    radius: 30,
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      userName,
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.email),
+                    onPressed: () {
+                      _launchEmail(userEmail);
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.phone),
+                    onPressed: () {
+                      _makePhoneCall(userPhone);
+                    },
+                  ),
+                ],
               ),
-              SizedBox(height: 8),
-              Text("Email: $ownerEmail"),
-              Text("Teléfono: $ownerPhone"),
               SizedBox(height: 16),
-              Text(
-                "Última ubicación vista",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+              Row(children: [
+                Icon(Icons.location_on_rounded),
+                SizedBox(width: 8),
+                Text(
+                  "Última ubicación vista",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ]),
               SizedBox(height: 8),
               Container(
                 height: 200,

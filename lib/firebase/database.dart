@@ -148,25 +148,41 @@ class Database {
 
     // Obtener los datos de la mascota asociada
     final associatedPetId = lostPetData['petId'] ?? '';
-    if (associatedPetId.isEmpty) return lostPetData;
+    Map<String, dynamic>? petData;
 
-    DocumentSnapshot petSnapshot =
-        await firebaseFirestore.collection('pets').doc(associatedPetId).get();
+    if (associatedPetId.isNotEmpty) {
+      DocumentSnapshot petSnapshot =
+          await firebaseFirestore.collection('pets').doc(associatedPetId).get();
 
-    if (petSnapshot.exists) {
-      final petData = petSnapshot.data() as Map<String, dynamic>;
-      // Combinar ambos mapas
-      return {
-        ...lostPetData,
-        'petDetails': petData,
-      };
+      if (petSnapshot.exists) {
+        petData = petSnapshot.data() as Map<String, dynamic>;
+      }
     }
 
-    return lostPetData;
+    // Obtener los datos del usuario
+    final userId = lostPetData['userId']?.split('/').last ?? ''; // Extraer el ID del usuario
+    Map<String, dynamic>? userData;
+
+    if (userId.isNotEmpty) {
+      DocumentSnapshot userSnapshot =
+          await firebaseFirestore.collection('users').doc(userId).get();
+
+      if (userSnapshot.exists) {
+        userData = userSnapshot.data() as Map<String, dynamic>;
+      }
+    }
+
+    // Combinar todos los datos
+    return {
+      ...lostPetData,
+      if (petData != null) 'petDetails': petData,
+      if (userData != null) 'userDetails': userData,
+    };
   } catch (e) {
     print("Error al obtener detalles de la mascota perdida: $e");
     return null;
   }
 }
+
 
 }
