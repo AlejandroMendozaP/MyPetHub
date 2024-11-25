@@ -86,6 +86,38 @@ class Database {
     }
   }
 
+  Stream<List<Pet>> getFilteredUserPetsStream(String uid, String interest) {
+  try {
+    // Filtra por UID e interés
+    return firebaseFirestore
+        .collection('pets')
+        .where('userid', isEqualTo: '/users/$uid') // Filtra por UID
+        .where('interest', isEqualTo: interest) // Filtra por interés
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return Pet(
+          id: doc.id,
+          name: data['name'] ?? '',
+          race: data['race'] ?? '',
+          sex: data['sex'] ?? '',
+          interest: data['interest'] ?? '',
+          color: data['color'] ?? '',
+          birthdate: (data['birthdate'] as Timestamp).toDate(),
+          userid: data['userid'] ?? '',
+          description: data['description'] ?? '',
+          photo: data['photo'] ?? '',
+        );
+      }).toList();
+    });
+  } catch (e) {
+    print("Error al filtrar mascotas: $e");
+    return Stream.value([]);
+  }
+}
+
+
   Stream<List<Pet>> getUserPetsStream(String uid) {
   try {
     // Realiza la consulta a la colección "pets"
