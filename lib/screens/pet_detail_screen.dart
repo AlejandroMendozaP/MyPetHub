@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mypethub/firebase/database.dart';
 import 'package:mypethub/models/pet.dart';
 import 'package:mypethub/screens/add_pet_screen.dart';
 import 'package:mypethub/screens/report_lost_pet_screen.dart';
@@ -12,7 +13,8 @@ class PetDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('pets').doc(petId).snapshots(),
+      stream:
+          FirebaseFirestore.instance.collection('pets').doc(petId).snapshots(),
       builder: (context, petSnapshot) {
         if (petSnapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
@@ -42,7 +44,8 @@ class PetDetailScreen extends StatelessWidget {
               );
             }
 
-            final isLost = lostPetSnapshot.hasData && lostPetSnapshot.data!.docs.isNotEmpty;
+            final isLost = lostPetSnapshot.hasData &&
+                lostPetSnapshot.data!.docs.isNotEmpty;
 
             return Scaffold(
               extendBodyBehindAppBar: true,
@@ -75,19 +78,22 @@ class PetDetailScreen extends StatelessWidget {
                       children: [
                         Text(
                           pet.name,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 24),
                         ),
                         SizedBox(height: 8),
                         Row(
                           children: [
                             Text(
                               "Raza: ${pet.race}",
-                              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                              style: TextStyle(
+                                  color: Colors.grey[600], fontSize: 14),
                             ),
                             SizedBox(width: 16),
                             Text(
                               "Sexo: ${pet.sex}",
-                              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                              style: TextStyle(
+                                  color: Colors.grey[600], fontSize: 14),
                             ),
                           ],
                         ),
@@ -104,14 +110,16 @@ class PetDetailScreen extends StatelessWidget {
                         SizedBox(height: 16),
                         Text(
                           "Unos datos extras sobre ${pet.name}",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 20),
                         ),
                         SizedBox(height: 8),
                         Text(
                           pet.description.isNotEmpty
                               ? pet.description
                               : "No se ha proporcionado una descripción.",
-                          style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                          style:
+                              TextStyle(color: Colors.grey[600], fontSize: 16),
                         ),
                         SizedBox(height: 32),
 
@@ -167,6 +175,48 @@ class PetDetailScreen extends StatelessWidget {
                               );
                             },
                             const Color.fromARGB(255, 240, 175, 72),
+                          ),
+                          // Botón de eliminación
+                          _buildOptionButton(
+                            "Eliminar Mascota",
+                            Icons.delete_outline,
+                            () async {
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text("Eliminar Mascota"),
+                                  content: Text(
+                                      "¿Estás seguro de que deseas eliminar esta mascota? Esta acción no se puede deshacer."),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, false),
+                                      child: Text("Cancelar"),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, true),
+                                      child: Text("Eliminar"),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                              if (confirm == true) {
+                                try {
+                                  await Database().deletePet(petId);
+                                  Navigator.pop(
+                                      context); // Volver a la pantalla anterior tras eliminar
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text(
+                                            "Error al eliminar la mascota: $e")),
+                                  );
+                                }
+                              }
+                            },
+                            Colors.red[300],
                           ),
                         ],
                       ],

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mypethub/models/pet.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Database {
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
@@ -84,6 +85,38 @@ class Database {
     }
   }
 
+  Stream<List<Pet>> getUserPetsStream(String uid) {
+  try {
+    // Realiza la consulta a la colección "pets"
+    return firebaseFirestore
+        .collection('pets')
+        .where('userid', isEqualTo: '/users/$uid') // Filtra por UID
+        .snapshots()
+        .map((snapshot) {
+      // Mapea los documentos a objetos `Pet`
+      return snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return Pet(
+          id: doc.id, // Extrae el ID del documento
+          name: data['name'] ?? '',
+          race: data['race'] ?? '',
+          sex: data['sex'] ?? '',
+          color: data['color'] ?? '',
+          birthdate: (data['birthdate'] as Timestamp).toDate(),
+          userid: data['userid'] ?? '',
+          description: data['description'] ?? '',
+          photo: data['photo'] ?? '',
+        );
+      }).toList();
+    });
+  } catch (e) {
+    print("Error al obtener las mascotas en tiempo real: $e");
+    // Devuelve un stream vacío en caso de error
+    return Stream.value([]);
+  }
+}
+
+
   Future<bool> reportLostPet(Map<String, dynamic> lostPetData) async {
     try {
       await firebaseFirestore.collection('lostpets').add(lostPetData);
@@ -137,52 +170,77 @@ class Database {
   }
 
   Future<Map<String, dynamic>?> getLostPetDetails(String petId) async {
-  try {
-    // Obtener los datos de la mascota perdida
-    DocumentSnapshot lostPetSnapshot =
-        await firebaseFirestore.collection('lostpets').doc(petId).get();
+    try {
+      // Obtener los datos de la mascota perdida
+      DocumentSnapshot lostPetSnapshot =
+          await firebaseFirestore.collection('lostpets').doc(petId).get();
 
-    if (!lostPetSnapshot.exists) return null;
+      if (!lostPetSnapshot.exists) return null;
 
-    final lostPetData = lostPetSnapshot.data() as Map<String, dynamic>;
+      final lostPetData = lostPetSnapshot.data() as Map<String, dynamic>;
 
-    // Obtener los datos de la mascota asociada
-    final associatedPetId = lostPetData['petId'] ?? '';
-    Map<String, dynamic>? petData;
+      // Obtener los datos de la mascota asociada
+      final associatedPetId = lostPetData['petId'] ?? '';
+      Map<String, dynamic>? petData;
 
-    if (associatedPetId.isNotEmpty) {
-      DocumentSnapshot petSnapshot =
-          await firebaseFirestore.collection('pets').doc(associatedPetId).get();
+      if (associatedPetId.isNotEmpty) {
+        DocumentSnapshot petSnapshot = await firebaseFirestore
+            .collection('pets')
+            .doc(associatedPetId)
+            .get();
 
-      if (petSnapshot.exists) {
-        petData = petSnapshot.data() as Map<String, dynamic>;
+        if (petSnapshot.exists) {
+          petData = petSnapshot.data() as Map<String, dynamic>;
+        }
       }
-    }
 
-    // Obtener los datos del usuario
-    final userId = lostPetData['userId']?.split('/').last ?? ''; // Extraer el ID del usuario
-    Map<String, dynamic>? userData;
+      // Obtener los datos del usuario
+      final userId = lostPetData['userId']?.split('/').last ??
+          ''; // Extraer el ID del usuario
+      Map<String, dynamic>? userData;
 
-    if (userId.isNotEmpty) {
-      DocumentSnapshot userSnapshot =
-          await firebaseFirestore.collection('users').doc(userId).get();
+      if (userId.isNotEmpty) {
+        DocumentSnapshot userSnapshot =
+            await firebaseFirestore.collection('users').doc(userId).get();
 
-      if (userSnapshot.exists) {
-        userData = userSnapshot.data() as Map<String, dynamic>;
+        if (userSnapshot.exists) {
+          userData = userSnapshot.data() as Map<String, dynamic>;
+        }
       }
-    }
 
-    // Combinar todos los datos
-    return {
-      ...lostPetData,
-      if (petData != null) 'petDetails': petData,
-      if (userData != null) 'userDetails': userData,
-    };
-  } catch (e) {
-    print("Error al obtener detalles de la mascota perdida: $e");
-    return null;
+      // Combinar todos los datos
+      return {
+        ...lostPetData,
+        if (petData != null) 'petDetails': petData,
+        if (userData != null) 'userDetails': userData,
+      };
+    } catch (e) {
+      print("Error al obtener detalles de la mascota perdida: $e");
+      return null;
+    }
   }
-}
 
+  Future<void> deletePet(String petId) async {
+    try {
+      // Inicia una transacción para asegurar consistencia
+      await firebaseFirestore.runTransaction((transaction) async {
+        // Eliminar de la colección `pets`
+        transaction.delete(firebaseFirestore.collection('pets').doc(petId));
+
+        // Eliminar de la colección `lostpets`
+        final lostPetsSnapshot = await firebaseFirestore
+            .collection('lostpets')
+            .where('petId', isEqualTo: petId)
+            .get();
+
+        for (final doc in lostPetsSnapshot.docs) {
+          transaction.delete(doc.reference);
+        }
+      });
+    } catch (e) {
+      print("Error al eliminar la mascota: $e");
+      throw Exception("No se pudo eliminar la mascota.");
+    }
+  }
 
 }
