@@ -23,11 +23,13 @@ class _AddPetScreenState extends State<AddPetScreen> {
   final _colorController = TextEditingController();
   final _descriptionController = TextEditingController();
   String? _selectedSex;
+  String? _selectedInterest;
   DateTime? _birthdate;
   XFile? _petImage;
   String? _petImageUrl;
 
   final List<String> _sexOptions = ['Macho', 'Hembra'];
+  List<String> _interestOptions = []; // Opciones para tipo de mascota
 
   @override
   void initState() {
@@ -40,8 +42,26 @@ class _AddPetScreenState extends State<AddPetScreen> {
       _colorController.text = pet.color;
       _descriptionController.text = pet.description;
       _selectedSex = pet.sex;
+      _selectedInterest = pet.interest;
       _birthdate = pet.birthdate;
       _petImageUrl = pet.photo;
+    }
+    _loadInterestOptions(); // Cargar opciones de Firestore
+  }
+
+  Future<void> _loadInterestOptions() async {
+    try {
+      final querySnapshot =
+          await FirebaseFirestore.instance.collection('intereses').get();
+      final interests = querySnapshot.docs
+          .map((doc) => doc['interes'] as String)
+          .toList();
+
+      setState(() {
+        _interestOptions = interests;
+      });
+    } catch (e) {
+      print("Error al cargar intereses: $e");
     }
   }
 
@@ -119,7 +139,8 @@ class _AddPetScreenState extends State<AddPetScreen> {
   Future<void> _saveOrUpdatePet() async {
     if (_formKey.currentState!.validate() &&
         _birthdate != null &&
-        _selectedSex != null) {
+        _selectedSex != null &&
+        _selectedInterest != null) {
       await _uploadPhoto();
 
       try {
@@ -134,6 +155,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
             'birthdate': _birthdate,
             'photo': _petImageUrl,
             'userid': '/users/${FirebaseAuth.instance.currentUser!.uid}',
+            'interest': _selectedInterest,
           });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Mascota registrada exitosamente")),
@@ -151,6 +173,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
             'description': _descriptionController.text,
             'birthdate': _birthdate,
             if (_petImageUrl != null) 'photo': _petImageUrl,
+            'interest': _selectedInterest,
           });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Mascota actualizada exitosamente")),
@@ -207,6 +230,32 @@ class _AddPetScreenState extends State<AddPetScreen> {
                 validator: (value) => value == null || value.isEmpty
                     ? 'Este campo es obligatorio'
                     : null,
+              ),
+               SizedBox(height: 15),
+              DropdownButtonFormField2(
+                decoration: InputDecoration(
+                  labelText: 'Tipo de Mascota',
+                  filled: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                isExpanded: true,
+                value: _selectedInterest, // Asigna el valor inicial
+                items: _interestOptions
+                    .map((interest) => DropdownMenuItem<String>(
+                          value: interest,
+                          child: Text(interest),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedInterest = value as String?;
+                  });
+                },
+                validator: (value) =>
+                    value == null ? 'Por favor, selecciona un tipo' : null,
               ),
               SizedBox(height: 15),
               TextFormField(

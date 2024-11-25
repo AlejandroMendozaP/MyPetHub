@@ -5,6 +5,7 @@ class Pet {
   final String name;
   final String race;
   final String sex;
+  final String interest;
   final String color;
   final DateTime birthdate;
   final String userid;
@@ -16,6 +17,7 @@ class Pet {
     required this.name,
     required this.race,
     required this.sex,
+    required this.interest,
     required this.color,
     required this.birthdate,
     required this.userid,
@@ -31,6 +33,7 @@ class Pet {
       name: data['name'] ?? '',
       race: data['race'] ?? '',
       sex: data['sex'] ?? '',
+      interest: data['interest'],
       color: data['color'] ?? '',
       description: data['description'] ?? '',
       birthdate: (data['birthdate'] as Timestamp).toDate(),
@@ -45,6 +48,7 @@ class Pet {
       'name': name,
       'race': race,
       'sex': sex,
+      'interest': interest,
       'color': color,
       'description': description,
       'birthdate': birthdate,
