@@ -1,7 +1,9 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_onboarding_slider/flutter_onboarding_slider.dart';
 import 'package:mypethub/firebase/database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -65,11 +67,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
-
   Widget makeInput({
     required String label,
     required TextEditingController controller,
     bool obscureText = false,
+    TextInputType keyboardType = TextInputType.text, // Agregar este parámetro
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,12 +79,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         Text(
           label,
           style: TextStyle(
-              fontSize: 15, fontWeight: FontWeight.w400,),
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
+          ),
         ),
         SizedBox(height: 5),
         TextField(
           controller: controller,
           obscureText: obscureText,
+          keyboardType: keyboardType, // Configurar el tipo de teclado
           decoration: InputDecoration(
             contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
             enabledBorder: OutlineInputBorder(
@@ -96,14 +101,50 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
+  Future<bool> _validateUserInfo() async {
+    if (nameController.text.isEmpty ||
+        phoneController.text.isEmpty ||
+        stateController.text.isEmpty ||
+        cityController.text.isEmpty ||
+        _selectedInterests.isEmpty) {
+      final snackBar = SnackBar(
+        elevation: 0,
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        content: const AwesomeSnackbarContent(
+          title: '¡Espera!',
+          message: 'Completa todos los campos antes de continuar.',
+          contentType: ContentType.failure,
+        ),
+      );
+
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(snackBar);
+
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> setOnboardingSeen(String uid) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('onboarding_$uid', true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return OnBoardingSlider(
       finishButtonText: 'Iniciar',
       onFinish: () async {
-        await _saveUserInfo();
-        print("Datos guardados correctamente.");
-        Navigator.pushNamed(context, "/principal");
+        if (await _validateUserInfo()) {
+          await _saveUserInfo();
+          User? currentUser = FirebaseAuth.instance.currentUser;
+          if (currentUser != null) {
+            await setOnboardingSeen(currentUser.uid);
+            Navigator.pushReplacementNamed(context, "/principal");
+          }
+        }
       },
       finishButtonStyle: FinishButtonStyle(
         backgroundColor: kDarkBlueColor,
@@ -143,9 +184,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               const Text(
                 'La app donde puedes administrar a tus mejores amigos',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -168,7 +207,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
                 const SizedBox(height: 20),
                 makeInput(label: "Nombre Completo", controller: nameController),
-                makeInput(label: "Teléfono", controller: phoneController),
+                makeInput(
+                  label: "Teléfono",
+                  controller: phoneController,
+                  keyboardType: TextInputType.phone,
+                ),
                 makeInput(
                     label: "Estado",
                     controller: stateController), // Campo nuevo
@@ -222,7 +265,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             children: [
               const SizedBox(height: 480),
               Text(
-                'Start now!',
+                'Está todo listo',
                 style: TextStyle(
                     color: kDarkBlueColor,
                     fontSize: 24.0,
@@ -230,11 +273,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               const SizedBox(height: 20),
               const Text(
-                'Where everything is possible and customize your onboarding.',
+                'Empieza a administrar a tus adorables mascotas.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600),
               ),
             ],
           ),

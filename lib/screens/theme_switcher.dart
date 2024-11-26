@@ -26,7 +26,6 @@ class ThemeSwitcher extends StatelessWidget {
         ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -41,9 +40,7 @@ class ThemeSwitcher extends StatelessWidget {
                   style: GoogleFonts.getFont(
                     themeProvider.fontFamily,
                     fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                    fontWeight: FontWeight.bold,                  ),
                 );
               },
             ),

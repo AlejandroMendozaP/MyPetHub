@@ -56,6 +56,7 @@ class MainApp extends StatelessWidget {
         "/email" : (context) => EmailVerification(),
         "/principal" : (context) => PrincipalScreen(),
         "/editprofile" : (context) => EditProfileScreen(),
+        "/welcome" : (context) => WelcomeScreen(),
       },
     );
   }

@@ -4,12 +4,18 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mypethub/firebase/email_auth.dart';
-import 'package:mypethub/screens/reset_password_screen.dart'; // Asegúrate de que el import sea correcto.
+import 'package:mypethub/screens/reset_password_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Asegúrate de que el import sea correcto.
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final EmailAuth emailAuth = EmailAuth();
+
+  Future<bool> hasSeenOnboarding(String uid) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('onboarding_$uid') ?? false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,18 +94,25 @@ class LoginScreen extends StatelessWidget {
                               emailController.text,
                               passwordController.text,
                             );
-                            print("Is logged in: $isLoggedIn");
                             if (isLoggedIn) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Has iniciado sesión.')),
-                              );
-                              Navigator.pushReplacementNamed(context,
-                                  "/onboarding"); // usa pushReplacementNamed para reemplazar la pantalla actual
+                              User? currentUser =
+                                  FirebaseAuth.instance.currentUser;
+                              if (currentUser != null) {
+                                bool seenOnboarding =
+                                    await hasSeenOnboarding(currentUser.uid);
+                                if (seenOnboarding) {
+                                  Navigator.pushReplacementNamed(
+                                      context, "/principal");
+                                } else {
+                                  Navigator.pushReplacementNamed(
+                                      context, "/onboarding");
+                                }
+                              }
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                     content: Text(
-                                        'Error: Email not verified or invalid credentials')),
+                                        'Error: Email no verificado o credenciales inválidas')),
                               );
                             }
                           },
@@ -137,13 +150,25 @@ class LoginScreen extends StatelessWidget {
                         onPressed: () async {
                           User? user = await emailAuth.signInWithGoogle();
                           if (user != null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content:
-                                      Text('Bienvenido ${user.displayName}!')),
-                            );
-                            Navigator.pushReplacementNamed(
-                                context, "/onboarding");
+                            bool seenOnboarding =
+                                await hasSeenOnboarding(user.uid);
+                            if (seenOnboarding) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text(
+                                        'Bienvenido de nuevo, ${user.displayName}!')),
+                              );
+                              Navigator.pushReplacementNamed(
+                                  context, "/principal");
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text(
+                                        'Bienvenido, ${user.displayName}!')),
+                              );
+                              Navigator.pushReplacementNamed(
+                                  context, "/onboarding");
+                            }
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -188,13 +213,25 @@ class LoginScreen extends StatelessWidget {
                                 await emailAuth.signInWithFacebook();
                             User? user = userCredential.user;
                             if (user != null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text(
-                                        'Bienvenido ${user.displayName}!')),
-                              );
-                              Navigator.pushReplacementNamed(
-                                  context, "/onboarding");
+                              bool seenOnboarding =
+                                  await hasSeenOnboarding(user.uid);
+                              if (seenOnboarding) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          'Bienvenido de nuevo, ${user.displayName}!')),
+                                );
+                                Navigator.pushReplacementNamed(
+                                    context, "/principal");
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          'Bienvenido, ${user.displayName}!')),
+                                );
+                                Navigator.pushReplacementNamed(
+                                    context, "/onboarding");
+                              }
                             }
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -284,9 +321,7 @@ class LoginScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(label,
-            style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w400)),
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400)),
         SizedBox(height: 5),
         TextField(
           controller: controller,

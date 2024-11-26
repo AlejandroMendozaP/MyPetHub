@@ -59,7 +59,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Row(
               children: [
-                Icon(leadingIcon,),
+                Icon(
+                  leadingIcon,
+                ),
                 SizedBox(width: 15),
                 Text(
                   title,
@@ -182,7 +184,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => EditProfileScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => EditProfileScreen()),
                     ).then((_) {
                       // Refresca la lista después de registrar una nueva mascota
                       setState(() {
@@ -196,8 +199,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Icons.color_lens,
                   () {
                     Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ThemeSwitcher()));
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ThemeSwitcher()));
+                  },
+                ),
+                _buildOptionButton(
+                  "Cerrar sesión",
+                  Icons.logout,
+                  () async {
+                    try {
+                      await _auth.signOut();
+                      Navigator.of(context).pushReplacementNamed(
+                          '/welcome'); // Reemplaza con la ruta de tu pantalla de inicio de sesión
+                    } catch (e) {
+                      print("Error al cerrar sesión: $e");
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Error al cerrar sesión: $e")),
+                      );
+                    }
                   },
                 ),
               ],
