@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mypethub/firebase/database.dart';
 import 'package:mypethub/screens/edit_profile_screen.dart';
 import 'package:mypethub/screens/theme_switcher.dart';
+import 'package:http/http.dart' as http;
+import 'package:mypethub/views/web_view_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -79,6 +83,116 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _showSubscriptionOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Opciones de Suscripción",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 20),
+              ListTile(
+                leading: Icon(Icons.credit_card),
+                title: Text("Stripe"),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.paypal),
+                title: Text("PayPal"),
+                onTap: () {
+                  _handlePayPalPayment();
+                  Navigator.pop(context);
+                }
+              ),
+              ListTile(
+                leading: Icon(Icons.money),
+                title: Text("Pago en Efectivo"),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _handlePayPalPayment() async {
+  const clientId =
+      'AZUbyyYqEKuDKOaSitfw4_DH8i2_F7Qdzfu2ZkvGoLGGCNzOfBR6hxiN6YGRFyGesPcJd18RCcAoygUD';
+  const secret =
+      'ELNC5xACQGulVvfa2oc7kp6P8rrM8iE3ote2bUeayxoUvG6gJNyMiTemEJ_IxY-TpAP5MRPSjPF1yqsb';
+
+  final response = await http.post(
+    Uri.parse('https://api-m.sandbox.paypal.com/v1/oauth2/token'),
+    headers: {
+      'Authorization': 'Basic ${base64Encode(utf8.encode('$clientId:$secret'))}',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: {'grant_type': 'client_credentials'},
+  );
+
+  if (response.statusCode == 200) {
+    final accessToken = json.decode(response.body)['access_token'];
+
+    final paymentResponse = await http.post(
+      Uri.parse('https://api-m.sandbox.paypal.com/v1/payments/payment'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+      body: json.encode({
+        "intent": "sale",
+        "payer": {"payment_method": "paypal"},
+        "transactions": [
+          {
+            "amount": {"total": "10.00", "currency": "MXN"},
+            "description": "Suscripción Premium"
+          }
+        ],
+        "redirect_urls": {
+          "return_url": "https://example.com/success",
+          "cancel_url": "https://example.com/cancel"
+        }
+      }),
+    );
+
+    if (paymentResponse.statusCode == 201) {
+      final links = json.decode(paymentResponse.body)['links'];
+      final approvalUrl =
+          links.firstWhere((link) => link['rel'] == 'approval_url')['href'];
+
+      // Redirigir al WebView para mostrar PayPal dentro de la app
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PayPalWebView(url: approvalUrl),
+        ),
+      );
+    } else {
+      print("Error al crear el pago: ${paymentResponse.body}");
+    }
+  } else {
+    print("Error al obtener el token de acceso: ${response.body}");
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     if (userData == null) {
@@ -98,8 +212,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.deepPurple[800]!,
-                    Colors.deepPurpleAccent,
+                    const Color.fromARGB(255, 222, 49, 99),
+                    const Color.fromARGB(255, 255, 138, 138),
                   ],
                 ),
               ),
@@ -133,6 +247,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 222, 49, 99),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              onPressed: () => _showSubscriptionOptions(context),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                child: Text(
+                  "Premium",
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
+              ),
+            ),
             Center(
               child: Card(
                 margin: EdgeInsets.fromLTRB(0.0, 45.0, 0.0, 0.0),
@@ -143,7 +275,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Interests",
+                        "Intereses",
                         style: TextStyle(
                           fontSize: 17.0,
                           fontWeight: FontWeight.w800,
