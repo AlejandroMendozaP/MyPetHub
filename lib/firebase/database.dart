@@ -213,6 +213,97 @@ class Database {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getAdoptionPets() async {
+    try {
+      QuerySnapshot adoptionPetsSnapshot =
+          await firebaseFirestore.collection('adoptionpets').get();
+
+      List<Map<String, dynamic>> adoptionPets = [];
+
+      for (var doc in adoptionPetsSnapshot.docs) {
+        final adoptionPetData = doc.data() as Map<String, dynamic>;
+
+        // Obtener el ID de la mascota
+        final petId = adoptionPetData['petId'] ?? '';
+
+        if (petId.isNotEmpty) {
+          // Consultar la información de la mascota en la colección "pets"
+          DocumentSnapshot petDoc =
+              await firebaseFirestore.collection('pets').doc(petId).get();
+
+          if (petDoc.exists) {
+            final petData = petDoc.data() as Map<String, dynamic>;
+
+            // Combinar los datos
+            adoptionPets.add({
+              'adoptionPet': {
+                ...adoptionPetData,
+                'id': doc.id, // Incluye el ID del documento
+              },
+              'pet': petData,
+            });
+          }
+        }
+      }
+
+      return adoptionPets;
+    } catch (e) {
+      print("Error al obtener mascotas en adopción: $e");
+      return [];
+    }
+  }
+
+  Future<Map<String, dynamic>?> getAdoptionPetDetails(String petId) async {
+    try {
+      // Obtener los datos de la mascota perdida
+      DocumentSnapshot adoptionPetSnapshot =
+          await firebaseFirestore.collection('adoptionpets').doc(petId).get();
+
+      if (!adoptionPetSnapshot.exists) return null;
+
+      final adoptionPetData = adoptionPetSnapshot.data() as Map<String, dynamic>;
+
+      // Obtener los datos de la mascota asociada
+      final associatedPetId = adoptionPetData['petId'] ?? '';
+      Map<String, dynamic>? petData;
+
+      if (associatedPetId.isNotEmpty) {
+        DocumentSnapshot petSnapshot = await firebaseFirestore
+            .collection('pets')
+            .doc(associatedPetId)
+            .get();
+
+        if (petSnapshot.exists) {
+          petData = petSnapshot.data() as Map<String, dynamic>;
+        }
+      }
+
+      // Obtener los datos del usuario
+      final userId = adoptionPetData['userId']?.split('/').last ??
+          ''; // Extraer el ID del usuario
+      Map<String, dynamic>? userData;
+
+      if (userId.isNotEmpty) {
+        DocumentSnapshot userSnapshot =
+            await firebaseFirestore.collection('users').doc(userId).get();
+
+        if (userSnapshot.exists) {
+          userData = userSnapshot.data() as Map<String, dynamic>;
+        }
+      }
+
+      // Combinar todos los datos
+      return {
+        ...adoptionPetData,
+        if (petData != null) 'petDetails': petData,
+        if (userData != null) 'userDetails': userData,
+      };
+    } catch (e) {
+      print("Error al obtener detalles de la mascota perdida: $e");
+      return null;
+    }
+  }
+
   Future<Map<String, dynamic>?> getLostPetDetails(String petId) async {
     try {
       // Obtener los datos de la mascota perdida

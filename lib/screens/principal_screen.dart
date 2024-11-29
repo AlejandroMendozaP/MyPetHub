@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:mypethub/screens/adoption_screen.dart';
 import 'package:mypethub/screens/lost_screen.dart';
 import 'package:mypethub/screens/my_pets_screen.dart';
 import 'package:mypethub/screens/profile_screen.dart';
@@ -16,7 +17,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
   // Lista de widgets para cada apartado
   final List<Widget> _screens = [
     MyPetsScreen(),
-    AdoptarScreen(),
+    AdoptionScreen(),
     LostScreen(),
     ProfileScreen(),
   ];
@@ -70,11 +71,3 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
   }
 }
 
-class AdoptarScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text("Adoptar", style: TextStyle(fontSize: 24)),
-    );
-  }
-}

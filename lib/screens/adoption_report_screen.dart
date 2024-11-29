@@ -104,7 +104,7 @@ class _AdoptionReportScreenState extends State<AdoptionReportScreen> {
                 controller: _descriptionController,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  labelText: 'Descripción',
+                  labelText: '¿Por qué lo das en adopción?',
                   prefixIcon: Icon(Icons.description),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
