@@ -95,9 +95,7 @@ class _ReportLostPetScreenState extends State<ReportLostPetScreen> {
       appBar: AppBar(
         title: Text('Reportar Mascota Perdida', style: theme.textTheme.titleLarge),
         centerTitle: true,
-        backgroundColor: Colors.white,
         elevation: 0,
-        foregroundColor: Colors.black,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
