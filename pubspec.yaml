@@ -32,6 +32,7 @@ dependencies:
   awesome_snackbar_content: ^0.1.4
   http: ^1.2.2
   webview_flutter: ^4.10.0
+  firebase_messaging: ^15.1.5
 
 dev_dependencies:
   flutter_test:

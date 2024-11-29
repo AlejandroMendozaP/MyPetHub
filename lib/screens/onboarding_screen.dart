@@ -1,5 +1,7 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_onboarding_slider/flutter_onboarding_slider.dart';
 import 'package:mypethub/firebase/database.dart';
@@ -132,6 +134,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     await prefs.setBool('onboarding_$uid', true);
   }
 
+  Future<void> saveFcmToken() async {
+  try {
+    // Obtener el token FCM
+    String? token = await FirebaseMessaging.instance.getToken();
+
+    if (token != null) {
+      // Obtener el ID del usuario actual
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Guardar el token en Firestore
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+          'fcmToken': token,
+        });
+        print("Token FCM guardado: $token");
+      }
+    }
+  } catch (e) {
+    print("Error al guardar el token FCM: $e");
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     return OnBoardingSlider(
@@ -139,6 +162,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       onFinish: () async {
         if (await _validateUserInfo()) {
           await _saveUserInfo();
+          await saveFcmToken();
           User? currentUser = FirebaseAuth.instance.currentUser;
           if (currentUser != null) {
             await setOnboardingSeen(currentUser.uid);

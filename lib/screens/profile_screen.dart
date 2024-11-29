@@ -96,7 +96,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                "Opciones de Suscripción",
+                "Proceder a Pago",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -104,26 +104,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               SizedBox(height: 20),
               ListTile(
-                leading: Icon(Icons.credit_card),
-                title: Text("Stripe"),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
                 leading: Icon(Icons.paypal),
                 title: Text("PayPal"),
                 onTap: () {
                   _handlePayPalPayment();
                   Navigator.pop(context);
                 }
-              ),
-              ListTile(
-                leading: Icon(Icons.money),
-                title: Text("Pago en Efectivo"),
-                onTap: () {
-                  Navigator.pop(context);
-                },
               ),
             ],
           ),

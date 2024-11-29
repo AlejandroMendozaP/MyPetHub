@@ -145,7 +145,7 @@ class _ReportLostPetScreenState extends State<ReportLostPetScreen> {
                       SizedBox(width: 10),
                       Text(
                         _selectedDate == null
-                            ? 'Selecciona una fecha'
+                            ? 'Ultima vez visto'
                             : 'Fecha: ${_selectedDate!.toLocal().toString().split(' ')[0]}',
                         style: theme.textTheme.bodyLarge,
                       ),
@@ -168,7 +168,7 @@ class _ReportLostPetScreenState extends State<ReportLostPetScreen> {
                       SizedBox(width: 10),
                       Text(
                         _selectedLocation == null
-                            ? 'Selecciona una ubicación'
+                            ? '¿Dónde lo viste por última vez?'
                             : 'Ubicación seleccionada',
                         style: theme.textTheme.bodyLarge,
                       ),
