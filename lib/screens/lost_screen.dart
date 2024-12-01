@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mypethub/firebase/database.dart';
 import 'lost_pet_detail_screen.dart'; // Importa la pantalla de detalle
+import 'package:intl/intl.dart';
 
 class LostScreen extends StatefulWidget {
   LostScreen({Key? key}) : super(key: key);
@@ -45,13 +46,11 @@ class _LostScreenState extends State<LostScreen> {
                 }
 
                 // Filtrar los datos según el interés seleccionado
-                final lostPetsWithDetails = snapshot.data!
-                    .where((item) {
-                      final petType = item['pet']['interest'];
-                      return selectedInterest == 'Todos' ||
-                          petType == selectedInterest;
-                    })
-                    .toList();
+                final lostPetsWithDetails = snapshot.data!.where((item) {
+                  final petType = item['pet']['interest'];
+                  return selectedInterest == 'Todos' ||
+                      petType == selectedInterest;
+                }).toList();
 
                 if (lostPetsWithDetails.isEmpty) {
                   return const Center(
@@ -71,7 +70,20 @@ class _LostScreenState extends State<LostScreen> {
                         'https://via.placeholder.com/150'; // Imagen por defecto
                     final lastSeenDate =
                         lostPetData['lastSeenDate'] ?? 'Desconocido';
-                    final lostPetId = lostPetData['id'] ?? 'Desconocido'; // Extrae el ID de `lostPet`
+                    final lostPetId = lostPetData['id'] ??
+                        'Desconocido'; // Extrae el ID de `lostPet`
+                    final rawLastSeenDate = lostPetData['lastSeenDate'];
+                    String formattedLastSeenDate = 'Desconocido';
+
+                    if (rawLastSeenDate != null) {
+                      try {
+                        final date = DateTime.parse(rawLastSeenDate);
+                        formattedLastSeenDate =
+                            DateFormat('dd/MM/yyyy').format(date);
+                      } catch (e) {
+                        debugPrint('Error al parsear la fecha: $e');
+                      }
+                    }
 
                     return GestureDetector(
                       onTap: () {
@@ -112,7 +124,7 @@ class _LostScreenState extends State<LostScreen> {
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
-                                      'Visto por última vez: $lastSeenDate',
+                                      'Visto por última vez: $formattedLastSeenDate',
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium,

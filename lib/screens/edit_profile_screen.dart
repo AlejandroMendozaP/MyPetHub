@@ -145,69 +145,81 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _saveProfile() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        final user = FirebaseAuth.instance.currentUser;
-        if (user == null) return;
+  if (_formKey.currentState!.validate()) {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
 
-        // Subir imagen a Supabase si hay una nueva imagen seleccionada
-        if (_newProfileImage != null) {
-          try {
-            final supabaseClient = Supabase.instance.client;
-            final fileBytes = await _newProfileImage!.readAsBytes();
+      // Subir imagen a Supabase si hay una nueva imagen seleccionada
+      if (_newProfileImage != null) {
+        try {
+          final supabaseClient = Supabase.instance.client;
+          final fileBytes = await _newProfileImage!.readAsBytes();
 
-            final filePath =
-                'users/${user.uid}/${DateTime.now().millisecondsSinceEpoch}.jpg';
-            await supabaseClient.storage
-                .from('mypethub')
-                .uploadBinary(filePath, fileBytes);
+          final filePath =
+              'users/${user.uid}/${DateTime.now().millisecondsSinceEpoch}.jpg';
+          await supabaseClient.storage
+              .from('mypethub')
+              .uploadBinary(filePath, fileBytes);
 
-            // Obtener URL pública
-            _newProfileImageUrl =
-                supabaseClient.storage.from('mypethub').getPublicUrl(filePath);
-            Navigator.pop(context);
-          } catch (e) {
-            print("Error al subir la imagen: $e");
+          // Obtener URL pública
+          _newProfileImageUrl =
+              supabaseClient.storage.from('mypethub').getPublicUrl(filePath);
+        } catch (e) {
+          print("Error al subir la imagen: $e");
+          if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Error al subir la imagen')),
             );
-            return;
           }
+          return;
         }
+      }
 
-        // Actualizar datos en Firebase
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .update({
-          'name': _nameController.text,
-          'phone': _phoneController.text,
-          'city': _cityController.text,
-          'state': _stateController.text,
-          'interests': _selectedInterests,
-          if (_newProfileImageUrl != null) 'photo': _newProfileImageUrl,
+      // Actualizar datos en Firebase
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .update({
+        'name': _nameController.text,
+        'phone': _phoneController.text,
+        'city': _cityController.text,
+        'state': _stateController.text,
+        'interests': _selectedInterests,
+        if (_newProfileImageUrl != null) 'photo': _newProfileImageUrl,
+      });
+
+      // Actualizar estado local
+      if (_newProfileImageUrl != null) {
+        setState(() {
+          _profileImageUrl = _newProfileImageUrl;
+          _newProfileImage = null;
+          _newProfileImageUrl = null;
         });
+      }
 
-        // Actualizar estado local
-        if (_newProfileImageUrl != null) {
-          setState(() {
-            _profileImageUrl = _newProfileImageUrl;
-            _newProfileImage = null;
-            _newProfileImageUrl = null;
-          });
-        }
-
+      // Mostrar un mensaje de éxito solo si el widget sigue montado
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Perfil actualizado exitosamente')),
         );
-      } catch (e) {
-        print("Error al guardar el perfil: $e");
+      }
+
+      // Navegar fuera de la pantalla solo si sigue montado
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      print("Error al guardar el perfil: $e");
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error al guardar el perfil')),
         );
       }
     }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

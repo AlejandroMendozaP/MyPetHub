@@ -213,7 +213,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
                       ? FileImage(File(_petImage!.path))
                       : (_petImageUrl != null
                           ? NetworkImage(_petImageUrl!) as ImageProvider
-                          : AssetImage('assets/default_pet.jpg')),
+                          : NetworkImage('https://wyfcbhyngmdwuhstieiw.supabase.co/storage/v1/object/public/mypethub/pets/pet_profile.png')),
                 ),
               ),
               SizedBox(height: 15),

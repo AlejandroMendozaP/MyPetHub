@@ -16,24 +16,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final EmailAuth emailAuth = EmailAuth();
 
   Future<void> _registerUser() async {
-    final email = emailController.text;
-    final password = passwordController.text;
-    final confirmPassword = confirmPasswordController.text;
+  final email = emailController.text.trim();
+  final password = passwordController.text.trim();
+  final confirmPassword = confirmPasswordController.text.trim();
 
-    if (password != confirmPassword) {
-      _showMessage("Las contraseñas no coinciden.");
-      return;
-    }
-
-    bool isSuccess = await emailAuth.createUser(email, password);
-    if (isSuccess) {
-      //_showMessage("Cuenta creada. Por favor, verifica tu correo electrónico.");
-      //Navigator.pop(context);
-      Navigator.pushNamed(context, "/email");
-    } else {
-      _showMessage("Error al crear la cuenta.");
-    }
+  if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+    _showMessage("Por favor, llena todos los campos.");
+    return;
   }
+
+  if (password != confirmPassword) {
+    _showMessage("Las contraseñas no coinciden.");
+    return;
+  }
+
+  bool isSuccess = await emailAuth.createUser(email, password);
+  if (isSuccess) {
+    Navigator.pushNamed(context, "/email");
+  } else {
+    _showMessage("Error al crear la cuenta.");
+  }
+}
+
 
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
@@ -43,15 +47,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back_ios, size: 20, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios, size: 20,),
         ),
       ),
       body: SingleChildScrollView(
@@ -132,7 +134,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       children: <Widget>[
         Text(
           label,
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Colors.black87),
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400,),
         ),
         SizedBox(height: 5),
         TextField(

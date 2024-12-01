@@ -149,7 +149,7 @@ class LostPetDetailScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: NetworkImage(petPhoto),
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                   ),
                   borderRadius: BorderRadius.circular(16.0),
                 ),

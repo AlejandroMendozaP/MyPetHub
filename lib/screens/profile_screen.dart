@@ -208,7 +208,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   SizedBox(height: 110.0),
                   CircleAvatar(
                     radius: 65.0,
-                    backgroundImage: profileImageUrl != null
+                    backgroundImage: userData!['photo'] != null
                         ? NetworkImage(userData!['photo'])
                         : AssetImage('assets/default_avatar.jpg')
                             as ImageProvider,
